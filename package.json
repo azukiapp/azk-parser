@@ -6,8 +6,7 @@
   "scripts": {
     "test": "gulp mocha",
     "start": "gulp",
-    "prepublish": "gulp mocha",
-    "patch": "npm version patch && npm publish && git push"
+    "patch": "npm test && npm version patch && npm publish && git push"
   },
   "repository": {
     "type": "git",
