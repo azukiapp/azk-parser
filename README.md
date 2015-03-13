@@ -23,3 +23,9 @@ $ gulp lint
 ```
 $ gulp test
 ```
+
+#### Publish a patch to npm
+
+```
+$ npm run-script patch
+```
