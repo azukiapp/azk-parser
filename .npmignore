@@ -7,5 +7,7 @@
 .travis.yml
 lib/spec/
 node_modules/
-spec/
+/spec/config_spec.js
+/spec/i18n_spec.js
+/spec/utils_spec.js
 src/
