@@ -7,7 +7,7 @@
     "test": "gulp mocha",
     "start": "gulp",
     "prepublish": "gulp mocha",
-    "patch": "npm version patch; npm publish; echo 'you can git push your changes now'"
+    "patch": "npm version patch && npm publish && echo '\n\nYou can git push your changes now!!\n\n'"
   },
   "repository": {
     "type": "git",
