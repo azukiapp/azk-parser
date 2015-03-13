@@ -1,7 +1,7 @@
 {
-  "name": "azk-core",
-  "version": "0.0.8",
-  "description": "azk core utils",
+  "name": "azk-projects-boilerplate",
+  "version": "0.0.1",
+  "description": "azk-projects-boilerplate",
   "main": "index.js",
   "scripts": {
     "test": "gulp mocha",
@@ -11,16 +11,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/azukiapp/azk-core.git"
+    "url": "https://github.com/azukiapp/azk-projects-boilerplate.git"
   },
   "keywords": [
     "azk"
   ],
   "license": "Apache License",
   "bugs": {
-    "url": "https://github.com/azukiapp/azk-core/issues"
+    "url": "https://github.com/azukiapp/azk-projects-boilerplate/issues"
   },
-  "homepage": "https://github.com/azukiapp/azk-core",
+  "homepage": "https://github.com/azukiapp/azk-projects-boilerplate",
   "dependencies": {
     "babel": "^4.7.9",
     "colors": "^1.0.3",

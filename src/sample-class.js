@@ -1,0 +1,11 @@
+import { _ } from 'azk-projects-boilerplate';
+
+class SampleClass {
+  constructor() { }
+  sampleMethod() {
+    var max = _.max([1, 2, 3, 4]);
+    return max;
+  }
+}
+
+module.exports = SampleClass;

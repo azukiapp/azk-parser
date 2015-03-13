@@ -1,4 +1,4 @@
-# azk-core
+# azk-projects-boilerplate
 
 #### Compile and watch
 
