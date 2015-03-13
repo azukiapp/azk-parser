@@ -10,7 +10,8 @@ module.exports = {
 	config      : config,
 	i18n        : i18n,
 	utils       : utils,
+
 	// fast access to utils functions
 	_           : azk_core._,
-	h           : spec_helper.h,
+	h           : spec_helper,
 };
