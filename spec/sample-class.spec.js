@@ -1,4 +1,4 @@
-import h from 'azk-core';
+import { h } from 'azk-core';
 import SampleClass from '../src/sample-class';
 
 describe("azk-projects-boilerplate", function() {

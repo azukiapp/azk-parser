@@ -6,8 +6,7 @@
   "scripts": {
     "test": "gulp mocha",
     "start": "gulp",
-    "prepublish": "gulp mocha",
-    "patch": "npm version patch && npm publish && git push"
+    "patch": "npm test && npm version patch && npm publish && git push"
   },
   "repository": {
     "type": "git",
@@ -22,7 +21,7 @@
   },
   "homepage": "https://github.com/azukiapp/azk-projects-boilerplate",
   "dependencies": {
-    "azk-core": "0.0.13",
+    "azk-core": "0.0.17",
     "babel": "^4.7.12",
     "colors": "^1.0.3",
     "crypto": "0.0.3",
