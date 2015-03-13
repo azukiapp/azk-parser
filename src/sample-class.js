@@ -1,4 +1,4 @@
-import { _ } from 'azk-projects-boilerplate';
+import { _ } from 'azk-core';
 
 class SampleClass {
   constructor() { }

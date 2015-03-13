@@ -22,7 +22,8 @@
   },
   "homepage": "https://github.com/azukiapp/azk-projects-boilerplate",
   "dependencies": {
-    "babel": "^4.7.9",
+    "azk-core": "0.0.13",
+    "babel": "^4.7.12",
     "colors": "^1.0.3",
     "crypto": "0.0.3",
     "lodash": "^3.5.0",
