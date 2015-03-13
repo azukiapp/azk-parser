@@ -1,6 +1,6 @@
 {
   "name": "azk-core",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "azk core utils",
   "main": "index.js",
   "scripts": {
