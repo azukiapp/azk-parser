@@ -5,9 +5,12 @@ var utils       = require('./lib/src/utils');
 var spec_helper = require('./lib/spec/spec_helper');
 
 module.exports = {
-	_           : azk_core._,
+	azk_core    : azk_core,
 	spec_helper : spec_helper,
 	config      : config,
 	i18n        : i18n,
 	utils       : utils,
+	// fast access to utils functions
+	_           : azk_core._,
+	h           : spec_helper.h,
 };
