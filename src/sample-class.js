@@ -1,7 +1,7 @@
 import { _ } from 'azk-core';
 
 /**
- * This is a Sample Class
+ * azk-projects-boilerplate ES6 class example
  */
 class SampleClass {
 

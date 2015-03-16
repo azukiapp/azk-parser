@@ -1,6 +1,10 @@
 import { h } from 'azk-core';
 import SampleClass from '../src/sample-class';
 
+/**
+ * azk-projects-boilerplate spec example
+ * uses mocha and chai
+ */
 describe("SampleClass", function() {
 
   var sampleClass;

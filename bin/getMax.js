@@ -1,5 +1,11 @@
 #!/usr/bin/env node
 
+/*
+  azk-projects-boilerplate bin example
+  With that file we can install with -g
+  or execute at command line with ./bin/getMax.js
+ */
+
 var _ = require('azk-core')._;
 var SampleClass = require('../lib/src/sample-class');
 var sampleClass = new SampleClass();
