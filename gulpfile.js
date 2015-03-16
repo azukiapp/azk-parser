@@ -57,11 +57,16 @@ gulp.task('mocha', ['babel', 'lint'], function() {
    lint: jshint + jscs
 */
 gulp.task('jshint', function() {
-  return gulp.src(['src/**/*.js', 'spec/**/*.js'])
+  return gulp.src(['src/**/*.js', 'spec/**/*.js', 'bin/**/*.js'])
     .pipe(jshint())
     .pipe(jshint.reporter('jshint-stylish'))
     .pipe(jshint.reporter('fail'));
 });
+gulp.task('jscs', function() {
+  return gulp.src(['src/**/*.js', 'spec/**/*.js', 'bin/**/*.js'])
+    .pipe(jscs());
+});
+gulp.task('lint', ['jscs', 'jshint']);
 
 /*
    watch
@@ -73,12 +78,6 @@ gulp.task('watch-src', function() {
 gulp.task('watch-spec', function() {
   gulp.watch(['src/**/*.js', 'spec/**/*.js'], ['mocha']);
 });
-gulp.task('jscs', function() {
-  return gulp.src(['src/**/*.js', 'spec/**/*.js'])
-    .pipe(jscs());
-});
-
-gulp.task('lint', ['jscs', 'jshint']);
 
 /*
    default
