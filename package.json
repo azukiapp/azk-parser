@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/azukiapp/azk-projects-boilerplate",
   "dependencies": {
-    "azk-core": "0.0.17",
+    "azk-core": "^1.0.3",
     "babel": "^4.7.12",
     "colors": "^1.0.3",
     "crypto": "0.0.3",
@@ -31,7 +31,7 @@
     "source-map-support": "^0.2.10"
   },
   "devDependencies": {
-    "chai": "^2.1.1",
+    "chai": "^2.1.2",
     "chai-as-promised": "^4.3.0",
     "chai-things": "^0.2.0",
     "gulp": "^3.8.11",
