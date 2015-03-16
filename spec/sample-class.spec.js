@@ -1,4 +1,4 @@
-import { h } from 'azk-core';
+import h from './spec-helper';
 import SampleClass from '../src/sample-class';
 
 /**
