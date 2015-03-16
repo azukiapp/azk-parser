@@ -6,7 +6,7 @@
   or execute at command line with ./bin/getMax.js
  */
 
-var _ = require('azk-core')._;
+var _ = require('lodash');
 var SampleClass = require('../lib/src/sample-class');
 var sampleClass = new SampleClass();
 
