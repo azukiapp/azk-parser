@@ -13,28 +13,22 @@ Search for `azk-projects-boilerplate` to find what have to be changed before upl
 $ npm install
 ```
 
-#### compile and watch source files
+#### test + lint (no watch)
 
 ```
-$ npm start
+$ gulp
 ```
 
-#### testing + linting
-
-```
-$ npm test
-```
-
-#### linting (jshint + jscs)
-
-```
-$ gulp lint
-```
-
-#### testing + linting and watch
+#### test + lint + watch
 
 ```
 $ gulp test
+```
+
+#### test + watch (no-lint)
+
+```
+$ gulp test-no-lint
 ```
 
 #### publish a patch to npm
