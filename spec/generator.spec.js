@@ -1,7 +1,7 @@
 import h from './spec-helper';
 import Generator from '../src/generator';
 
-describe("Generator", function() {
+describe('Generator', function() {
 
   var generator;
 
@@ -9,7 +9,7 @@ describe("Generator", function() {
     generator = new Generator();
   });
 
-  it("should generate `40 + 2;`", function() {
+  it('should generate `40 + 2;`', function() {
     var generated_code = generator.generate({ range: [ 0, 7 ],
       loc: { start: { line: 1, column: 0 }, end: { line: 1, column: 7 } },
       type: 'Program',

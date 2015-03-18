@@ -1,7 +1,7 @@
 import h from './spec-helper';
 import Parser from '../src/parser';
 
-describe("Parser", function() {
+describe('Parser', function() {
 
   var parser;
 
@@ -9,7 +9,7 @@ describe("Parser", function() {
     parser = new Parser();
   });
 
-  it("should parse `40 + 2;`", function() {
+  it('should parse `40 + 2;`', function() {
     var syntax = parser.parse('40 + 2;');
 
     // body[0]
