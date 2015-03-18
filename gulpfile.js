@@ -44,10 +44,10 @@ gulp.task('babel', ['babel-src', 'babel-spec']);
 /*
    mocha
 */
-gulp.task('test', ['mocha', 'watch-spec']);
+gulp.task('test-no-lint', ['mocha', 'watch-spec']);
 
-gulp.task('mocha', ['babel', 'lint'], function() {
-  return gulp.src('lib/spec/**/*.js', { read: false })
+gulp.task('mocha', ['babel'], function() {
+  return gulp.src('lib/spec/**/*_spec.js', { read: false })
     .pipe( mocha( {
       reporter: 'spec', growl: 'true', grep: yargs.argv.grep, timeout: 4000
     } ));
@@ -79,8 +79,14 @@ gulp.task('watch-spec', function() {
   gulp.watch(['src/**/*.js', 'spec/**/*.js'], ['mocha']);
 });
 
+gulp.task('watch-test-and-lint', function() {
+  gulp.watch(['src/**/*.js', 'spec/**/*.js'], ['test-and-lint']);
+});
+
 /*
    default
 */
+gulp.task('test-and-lint', ['mocha', 'lint']);
 
-gulp.task('default', ['babel', 'lint', 'watch-src']);
+gulp.task('default', ['test-and-lint']);
+gulp.task('test', ['test-and-lint', 'watch-test-and-lint']);
