@@ -1,6 +1,6 @@
 {
   "name": "azk-projects-boilerplate",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "azk-projects-boilerplate",
   "main": "index.js",
   "scripts": {
@@ -24,11 +24,9 @@
   "homepage": "https://github.com/azukiapp/azk-projects-boilerplate",
   "dependencies": {
     "azk-core": "^1.0.14",
-    "babel": "^4.7.13",
+    "babel": "^4.7.16",
     "colors": "^1.0.3",
     "crypto": "0.0.3",
-    "escodegen": "^1.6.1",
-    "esprima": "^2.1.0",
     "lodash": "^3.5.0",
     "nopt": "^3.0.1",
     "printf": "^0.2.1",
@@ -42,9 +40,9 @@
     "gulp": "^3.8.11",
     "gulp-babel": "^4.0.0",
     "gulp-jscs": "^1.4.0",
-    "gulp-jshint": "^1.9.2",
+    "gulp-jshint": "^1.9.4",
     "gulp-mocha": "^2.0.0",
-    "gulp-sourcemaps": "^1.5.0",
+    "gulp-sourcemaps": "^1.5.1",
     "jshint-stylish": "^1.0.1",
     "rimraf": "^2.3.2",
     "yargs": "^3.5.4"
