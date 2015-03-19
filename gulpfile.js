@@ -47,7 +47,7 @@ gulp.task('babel', ['babel-src', 'babel-spec']);
 gulp.task('test-no-lint', ['mocha', 'watch-spec']);
 
 gulp.task('mocha', ['babel'], function() {
-  return gulp.src('lib/spec/**/*_spec.js', { read: false })
+  return gulp.src('lib/spec/**/*.spec.js', { read: false })
     .pipe( mocha( {
       reporter: 'spec', growl: 'true', grep: yargs.argv.grep, timeout: 4000
     } ));
