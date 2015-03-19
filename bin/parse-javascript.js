@@ -4,9 +4,12 @@
   parse-javascript
 */
 
-var _ = require('lodash');
+require('babel/polyfill');
+require('source-map-support').install();
+
 var dlog = require('azk-core').dlog;
 var Parser = require('../lib/src/parser');
+var fileUtils = require('../lib/src/file-utils');
 var parser = new Parser();
 
 // https://www.npmjs.com/package/nopt
@@ -49,10 +52,12 @@ if (parsed.help || parsed.argv.original.length === 0) {
 }
 
 is_verbose && dlog(parsed, 'parsed nopt args', null);
-var files = parsed.argv.remain;
 var spaces = parsed.spaces || 2;
+var files = parsed.argv.remain;
 var first_file = files[0];
 
-var syntax = parser.parse('1 + 1;');
-var syntax_parsed = JSON.stringify(syntax, ' ', spaces);
-console.log(syntax_parsed);
+fileUtils.readFile(first_file).then(function(file_content) {
+  var syntax = parser.parse(file_content);
+  var syntax_parsed = JSON.stringify(syntax, ' ', spaces);
+  console.log(syntax_parsed);
+});

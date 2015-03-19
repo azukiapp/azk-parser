@@ -25,6 +25,7 @@
   "dependencies": {
     "azk-core": "^1.0.14",
     "babel": "^4.7.16",
+    "bluebird": "^2.9.14",
     "colors": "^1.0.3",
     "crypto": "0.0.3",
     "escodegen": "^1.6.1",
