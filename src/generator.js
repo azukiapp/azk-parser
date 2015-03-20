@@ -10,7 +10,7 @@ class Generator {
       comment: true,
       format: {
         indent: {
-          style: '    ',
+          style: '  ',
           base: 0,
           adjustMultilineComment: false
         },

@@ -44,23 +44,23 @@ systems({});`);
   });
 
   it('should get all nodes', function () {
-    var nodes = systems._findSystemsObject();
-    /**/require('azk-core').dlog(nodes, "nodes", null);/*-debug-*/
-    h.expect(nodes).to.not.be.undefined;
+    systems.add( new System({ name: 'system001' }) );
+    systems.add( new System({ name: 'system002' }) );
+    systems.add( new System({ name: 'system003' }) );
+    var new_syntax = systems._createSyntax();
+    var code = generator.generate(new_syntax);
+    h.expect(code).to.eql(`/**
+ * Documentation: http://docs.azk.io/Azkfile.js
+ */
+// Adds the systems that shape your system
+systems({
+    system001: {
+  },
+    system002: {
+  },
+    system003: {
+  }
+});`);
   });
-
-//   it('should systems with systems', function () {
-//     systems.add( new System({ name: 'system001' }) );
-//     systems.add( new System({ name: 'system002' }) );
-//     var code = generator.generate(systems.syntax);
-//     h.expect(code).to.eql(`/**
-//  * Documentation: http://docs.azk.io/Azkfile.js
-//  */
-// // Adds the systems that shape your system
-// systems({
-//   system001: {},
-//   system002: {}
-// });`);
-//   });
 
 });

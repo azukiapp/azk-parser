@@ -1,2 +1,2 @@
-  __SYSTEM_NAME__: {
-  }
+__SYSTEM_NAME__: {
+}

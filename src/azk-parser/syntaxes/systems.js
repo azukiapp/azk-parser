@@ -26,16 +26,30 @@ class Systems {
     this._systems.push(system);
   }
 
-  _findSystemsObject() {
-    var nodes = [];
-    estraverse.traverse(this.syntax, {
+  _findSystemsObject(syntax) {
+    var node_selected = null;
+    estraverse.traverse(syntax, {
       enter: function(node) {
         if (node.type === 'ObjectExpression') {
-          nodes.push(node);
+          node_selected = node;
         }
       }
     });
-    return nodes;
+    return node_selected;
+  }
+
+  _createSyntax() {
+    // get systems without any system
+    var initial_syntax = this.syntax;
+
+    // find ObjectExpression system({})
+    var object_expression = this._findSystemsObject(initial_syntax);
+
+    _.forEach(this._systems, function(system) {
+      object_expression.properties.push(system.syntax);
+    });
+
+    return initial_syntax;
   }
 
   get syntax() {

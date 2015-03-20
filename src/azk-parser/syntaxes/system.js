@@ -17,50 +17,50 @@ class System {
   get syntax() {
     return {
       "range": [
-        2,
-        24
+        0,
+        20
       ],
       "loc": {
         "start": {
           "line": 1,
-          "column": 2
+          "column": 0
         },
         "end": {
           "line": 2,
-          "column": 3
+          "column": 1
         }
       },
       "type": "Program",
       "body": [
         {
           "range": [
-            2,
-            24
+            0,
+            20
           ],
           "loc": {
             "start": {
               "line": 1,
-              "column": 2
+              "column": 0
             },
             "end": {
               "line": 2,
-              "column": 3
+              "column": 1
             }
           },
           "type": "LabeledStatement",
           "label": {
             "range": [
-              2,
-              17
+              0,
+              15
             ],
             "loc": {
               "start": {
                 "line": 1,
-                "column": 2
+                "column": 0
               },
               "end": {
                 "line": 1,
-                "column": 17
+                "column": 15
               }
             },
             "type": "Identifier",
@@ -68,17 +68,17 @@ class System {
           },
           "body": {
             "range": [
-              19,
-              24
+              17,
+              20
             ],
             "loc": {
               "start": {
                 "line": 1,
-                "column": 19
+                "column": 17
               },
               "end": {
                 "line": 2,
-                "column": 3
+                "column": 1
               }
             },
             "type": "BlockStatement",
@@ -92,23 +92,41 @@ class System {
           "type": "Identifier",
           "value": this._options.name,
           "range": [
-            2,
-            17
+            0,
+            15
           ],
           "loc": {
             "start": {
               "line": 1,
-              "column": 2
+              "column": 0
             },
             "end": {
               "line": 1,
-              "column": 17
+              "column": 15
             }
           }
         },
         {
           "type": "Punctuator",
           "value": ":",
+          "range": [
+            15,
+            16
+          ],
+          "loc": {
+            "start": {
+              "line": 1,
+              "column": 15
+            },
+            "end": {
+              "line": 1,
+              "column": 16
+            }
+          }
+        },
+        {
+          "type": "Punctuator",
+          "value": "{",
           "range": [
             17,
             18
@@ -126,37 +144,19 @@ class System {
         },
         {
           "type": "Punctuator",
-          "value": "{",
+          "value": "}",
           "range": [
             19,
             20
           ],
           "loc": {
             "start": {
-              "line": 1,
-              "column": 19
-            },
-            "end": {
-              "line": 1,
-              "column": 20
-            }
-          }
-        },
-        {
-          "type": "Punctuator",
-          "value": "}",
-          "range": [
-            23,
-            24
-          ],
-          "loc": {
-            "start": {
               "line": 2,
-              "column": 2
+              "column": 0
             },
             "end": {
               "line": 2,
-              "column": 3
+              "column": 1
             }
           }
         }
