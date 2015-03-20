@@ -80,7 +80,7 @@ gulp.task('watch-spec', function() {
 });
 
 gulp.task('watch-test-and-lint', function() {
-  gulp.watch(['src/**/*.js', 'spec/**/*.js'], ['test-and-lint']);
+  gulp.watch(['src/**/*.js', 'spec/**/*.js', 'bin/**/*.js'], ['test-and-lint']);
 });
 
 /*
