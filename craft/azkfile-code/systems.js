@@ -4,6 +4,6 @@
  */
 
 // Adds the systems that shape your system
-__SYSTEMS__({
+systems({
 
 });

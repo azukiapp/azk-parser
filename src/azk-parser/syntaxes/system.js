@@ -4,14 +4,20 @@ import { _ } from 'azk-core';
  * System
  */
 class System {
-  constructor(options) {
-    var default_options = {
+  constructor(props) {
+    var default_props = {
       name: '',
     };
 
-    this._options = {};
-    _.assign(this._options, default_options);
-    _.assign(this._options, options);
+    this._props = {};
+    _.assign(this._props, default_props);
+    _.assign(this._props, props);
+
+    this._depends = [];
+  }
+
+  addDependency(system) {
+    this._depends.push(system);
   }
 
   get syntax() {
@@ -64,7 +70,7 @@ class System {
               }
             },
             "type": "Identifier",
-            "name": this._options.name
+            "name": this._props.name
           },
           "body": {
             "range": [
@@ -90,7 +96,7 @@ class System {
       "tokens": [
         {
           "type": "Identifier",
-          "value": this._options.name,
+          "value": this._props.name,
           "range": [
             0,
             15
