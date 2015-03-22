@@ -4,7 +4,7 @@ import fileUtils from '../src/file-utils';
 var bb = require('bluebird');
 var spawn = bb.coroutine;
 
-describe('fileUtils', function() {
+describe('fileUtils:', function() {
 
   it('should read a file', function () {
     return spawn(function* () {

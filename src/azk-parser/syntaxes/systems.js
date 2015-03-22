@@ -1,5 +1,4 @@
 import { _ } from 'azk-core';
-var estraverse = require('estraverse');
 var Parser = require('../../parser');
 var parser = new Parser();
 
@@ -40,46 +39,50 @@ class Systems {
     });
   }
 
-  _findSystemsObject(syntax) {
+  _findSystemsObject(/*syntax*/) {
     var node_selected = null;
-    estraverse.traverse(syntax, {
-      enter: function(node) {
-        if (node.type === 'ObjectExpression') {
-          node_selected = node;
-        }
-      }
-    });
+    // estraverse.traverse(syntax, {
+    //   enter: function(node) {
+    //     if (node.type === 'ObjectExpression') {
+    //       node_selected = node;
+    //     }
+    //   }
+    // });
     return node_selected;
-  }
-
-  get syntax() {
-    // get initial syntax
-    var final_syntax = this._initial_syntax();
-
-    if (this._systems.length > 0) {
-      // find ObjectExpression system({})
-      var object_expression = this._findSystemsObject(final_syntax);
-
-      _.forEach(this._systems, function(system) {
-        object_expression.properties.push(system.syntax);
-      });
-    }
-
-    return final_syntax;
   }
 
   _initial_syntax() {
     return parser.parse([
-      "/**",
-      " * Documentation: http://docs.azk.io/Azkfile.js",
-      " */",
-      "",
-      "// Adds the systems that shape your system",
-      "systems({",
-      "",
-      "});",
-    ].join('\n'));
+        "/**",
+        " * Documentation: http://docs.azk.io/Azkfile.js",
+        " */",
+        "",
+        "// Adds the systems that shape your system",
+        "systems({",
+        "",
+        "});",
+      ]
+      .join('\n'))
+      .syntax;
   }
+
+  get syntax() {
+    // get initial syntax
+    var ast = this._initial_syntax();
+
+    if (this._systems.length > 0) {
+
+      // get ObjectExpression in system({})
+      var ast_object_expression = ast.program.body[0].expression.arguments[0];
+
+      _.forEach(this._systems, function(system) {
+        ast_object_expression.properties.push(system.syntax);
+      });
+    }
+
+    return ast;
+  }
+
 }
 
 module.exports = Systems;

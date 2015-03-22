@@ -1,5 +1,5 @@
-import { log, _ } from 'azk-core';
-var esprima = require('esprima');
+import { _ } from 'azk-core';
+var recast = require('recast');
 
 /**
  * Code Parser
@@ -17,16 +17,30 @@ class Parser {
     this._options = {};
     _.assign(this._options, default_options);
     _.assign(this._options, options);
+
+    this._code = null;
+    this._syntax = null;
   }
 
   parse(code) {
-    var syntax = esprima.parse(code, this._options);
+    if ( !code ) {
+      throw new Error('parse( --must receive code-- ) ');
+    }
 
-    log.debug('\n\n:: parser.parse() - syntax::');
-    log.debug(syntax);
+    this._code = code;
+    this._syntax = recast.parse(this._code, this._options);
 
-    return syntax;
+    return this;
   }
+
+  get syntax() {
+    return this._syntax;
+  }
+
+  get code() {
+    return this._code;
+  }
+
 }
 
 module.exports = Parser;

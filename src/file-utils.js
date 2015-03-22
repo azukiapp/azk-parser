@@ -1,5 +1,4 @@
-import { fs } from 'azk-core';
-
+var fs = require('fs');
 var bb = require('bluebird');
 bb.promisifyAll(fs);
 var spawn = bb.coroutine;

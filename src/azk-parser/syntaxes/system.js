@@ -1,4 +1,9 @@
 import { _ } from 'azk-core';
+import Depends from './depends';
+import PropertyArray from './property-array';
+
+var Parser = require('../../parser');
+var parser = new Parser();
 
 /**
  * System
@@ -6,14 +11,14 @@ import { _ } from 'azk-core';
 class System {
   constructor(props) {
     var default_props = {
-      name: '',
     };
 
     this._props = {};
     _.assign(this._props, default_props);
     _.assign(this._props, props);
 
-    this._depends = [];
+    this._name    = this._props.name;
+    this._depends = this._props.depends || [];
   }
 
   addDependency(system) {
@@ -21,155 +26,39 @@ class System {
   }
 
   get syntax() {
-    return {
-      "range": [
-        0,
-        20
-      ],
-      "loc": {
-        "start": {
-          "line": 1,
-          "column": 0
-        },
-        "end": {
-          "line": 2,
-          "column": 1
-        }
-      },
-      "type": "Program",
-      "body": [
-        {
-          "range": [
-            0,
-            20
-          ],
-          "loc": {
-            "start": {
-              "line": 1,
-              "column": 0
-            },
-            "end": {
-              "line": 2,
-              "column": 1
-            }
-          },
-          "type": "LabeledStatement",
-          "label": {
-            "range": [
-              0,
-              15
-            ],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 0
-              },
-              "end": {
-                "line": 1,
-                "column": 15
-              }
-            },
-            "type": "Identifier",
-            "name": this._props.name
-          },
-          "body": {
-            "range": [
-              17,
-              20
-            ],
-            "loc": {
-              "start": {
-                "line": 1,
-                "column": 17
-              },
-              "end": {
-                "line": 2,
-                "column": 1
-              }
-            },
-            "type": "BlockStatement",
-            "body": []
-          }
-        }
-      ],
-      "comments": [],
-      "tokens": [
-        {
-          "type": "Identifier",
-          "value": this._props.name,
-          "range": [
-            0,
-            15
-          ],
-          "loc": {
-            "start": {
-              "line": 1,
-              "column": 0
-            },
-            "end": {
-              "line": 1,
-              "column": 15
-            }
-          }
-        },
-        {
-          "type": "Punctuator",
-          "value": ":",
-          "range": [
-            15,
-            16
-          ],
-          "loc": {
-            "start": {
-              "line": 1,
-              "column": 15
-            },
-            "end": {
-              "line": 1,
-              "column": 16
-            }
-          }
-        },
-        {
-          "type": "Punctuator",
-          "value": "{",
-          "range": [
-            17,
-            18
-          ],
-          "loc": {
-            "start": {
-              "line": 1,
-              "column": 17
-            },
-            "end": {
-              "line": 1,
-              "column": 18
-            }
-          }
-        },
-        {
-          "type": "Punctuator",
-          "value": "}",
-          "range": [
-            19,
-            20
-          ],
-          "loc": {
-            "start": {
-              "line": 2,
-              "column": 0
-            },
-            "end": {
-              "line": 2,
-              "column": 1
-            }
-          }
-        }
-      ]
-    };
+    // get initial syntax
+    var ast = this._initial_syntax();
+    var system_body = ast.program.body[0].body.body;
 
+    // set system name
+    ast.program.body[0].label.name = this._props.name;
+
+    if (this._depends.length > 0) {
+      // 'depends': array property
+      var depends_property_array = new PropertyArray({ property_array_name: 'depends'});
+      // add each dependency
+      this._depends.forEach(function(sys) {
+        var depends_item = new Depends({ system: sys });
+        depends_property_array.addItem(depends_item.syntax);
+      });
+      system_body.push(depends_property_array.syntax);
+    }
+
+    return ast;
   }
+
+  _initial_syntax() {
+    return parser.parse([
+        " __SYSTEM_NAME__: {}",
+      ]
+      .join('\n'))
+      .syntax;
+  }
+
+  get name() {
+    return this._name;
+  }
+
 }
 
 module.exports = System;

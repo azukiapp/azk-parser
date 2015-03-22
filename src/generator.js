@@ -1,5 +1,5 @@
-import { log, _ } from 'azk-core';
-var escodegen = require('escodegen');
+import { _ } from 'azk-core';
+var recast = require('recast');
 
 /**
  * Code Generator
@@ -34,13 +34,15 @@ class Generator {
     _.assign(this._options, options);
   }
 
-  generate(syntax) {
-    syntax = escodegen.attachComments(syntax, syntax.comments, syntax.tokens);
-    var code = escodegen.generate(syntax, this._options);
+  generate(ast) {
+    var code = null;
+    code = recast.print(ast).code;
+    return code;
+  }
 
-    log.debug('\n\n:: generator.generate() - code::');
-    log.debug(code);
-
+  generatePrettyPrint(ast) {
+    //var code = recast.prettyPrint(ast, { tabWidth: 2 }).code;
+    var code = recast.print(ast).code;
     return code;
   }
 }

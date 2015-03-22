@@ -65,7 +65,7 @@ fileUtils.read(first_file).then(function(file_content) {
   // parse syntax
   var syntax;
   try {
-    syntax = parser.parse(file_content);
+    syntax = parser.parse(file_content).syntax;
   } catch (err) {
     console.error('\n  >> ERROR ----------------------------');
     console.error('    >> parser.parse(\'' + first_file + '\')');

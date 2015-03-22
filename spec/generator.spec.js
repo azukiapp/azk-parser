@@ -1,7 +1,7 @@
 import h from './spec-helper';
 import Generator from '../src/generator';
 
-describe('Generator', function() {
+describe('Generator:', function() {
 
   var generator;
 
