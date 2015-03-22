@@ -12,7 +12,7 @@
     "url": "https://github.com/azukiapp/azk-parser.git"
   },
   "bin": {
-    "parse-javascript.js": "./bin/parse-javascript.js.js"
+    "parse-javascript.js": "./bin/parse-javascript.js"
   },
   "keywords": [
     "azk"
