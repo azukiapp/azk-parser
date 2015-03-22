@@ -1,7 +1,7 @@
 {
-  "name": "azk-projects-boilerplate",
-  "version": "1.0.4",
-  "description": "azk-projects-boilerplate",
+  "name": "azk-parser",
+  "version": "0.1.0",
+  "description": "azk-parser",
   "main": "index.js",
   "scripts": {
     "test": "gulp mocha",
@@ -9,19 +9,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/azukiapp/azk-projects-boilerplate.git"
+    "url": "https://github.com/azukiapp/azk-parser.git"
   },
   "bin": {
-    "getMax": "./bin/getMax.js"
+    "parse-javascript.js": "./bin/parse-javascript.js.js"
   },
   "keywords": [
     "azk"
   ],
   "license": "Apache License",
   "bugs": {
-    "url": "https://github.com/azukiapp/azk-projects-boilerplate/issues"
+    "url": "https://github.com/azukiapp/azk-parser/issues"
   },
-  "homepage": "https://github.com/azukiapp/azk-projects-boilerplate",
+  "homepage": "https://github.com/azukiapp/azk-parser",
   "dependencies": {
     "azk-core": "^1.0.15",
     "babel": "^4.7.16",
