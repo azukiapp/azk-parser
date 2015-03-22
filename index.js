@@ -1,1 +1,1 @@
-module.exports = require('./lib/src/sample-class');
+module.exports = require('./lib/src/index');
