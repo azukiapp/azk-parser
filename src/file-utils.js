@@ -1,8 +1,9 @@
-var fs = require('fs');
+var fs = require('fs-extra');
 var bb = require('bluebird');
 bb.promisifyAll(fs);
 var spawn = bb.coroutine;
 
+//FIXME: move this class to azk-core
 module.exports = {
   /**
    * read :: fs.readFile
@@ -32,5 +33,18 @@ module.exports = {
   write: spawn(function* (full_path, data) {
     yield fs.writeFileAsync(full_path, data);
   }),
+
+  /**
+   * mkdirs :: fs.mkdirs
+   * @param  {String} full_path  folder fullpath
+   */
+  mkdirs: spawn(function* (full_path) {
+    yield fs.mkdirs(full_path);
+  }),
+
+  /**
+   * glob :: glob
+   */
+  glob: require('glob'),
 
 };
