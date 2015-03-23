@@ -30,21 +30,21 @@ describe('System:', function() {
     var code = generator.generate(system001.syntax);
     h.expect(code).to.eql(
       [
-        " system001: {}",
+        "system001: {}",
       ].join('\n')
     );
   });
 
-  it.skip('should generate a system with dependencies', function () {
+  it('should generate a system with dependencies', function () {
     var system002 = new System({ name: 'system002' });
     system001.addDependency(system002);
 
     var code = generator.generate(system001.syntax);
     h.expect(code).to.eql(
       [
-        " system001: {",
+        "system001: {",
         "  depends: [\"system002\"]",
-        " }",
+        "}",
       ].join('\n')
     );
   });

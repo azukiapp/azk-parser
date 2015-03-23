@@ -1,7 +1,7 @@
-# azk-projects-boilerplate
+# azk-parser
 
-`azk-projects-boilerplate` follow `azk` standards to create new npm packages.
-Search for `azk-projects-boilerplate` to find what have to be changed before upload.
+`azk-parser` follow `azk` standards to create new npm packages.
+Search for `azk-parser` to find what have to be changed before upload.
 
 - **src**:  all files will transpiled with babel to lib/src
 - **spec**: all files will transpiled with babel to lib/spec

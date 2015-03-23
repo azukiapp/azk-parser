@@ -25,12 +25,12 @@ describe('Systems:', function() {
     h.expect(systems._systems).to.have.length(2);
   });
 
-  it.skip('should find a system by name', function () {
+  it('should find a system by name', function () {
     var system_to_include = new System({ name: 'system001' });
     systems.add( system_to_include );
 
-    var system001 = systems.findByName( system001 );
-    h.expect(system001).to.eql(system_to_include);
+    var system_found = systems.findByName( 'system001' );
+    h.expect(system_found).to.eql(system_to_include);
   });
 
   it('should remove a system', function () {
@@ -76,9 +76,9 @@ describe('Systems:', function() {
         "",
         "// Adds the systems that shape your system",
         "systems({",
-        "  system001: {},",
-        "  system002: {},",
-        "  system003: {}",
+        " system001: {},",
+        " system002: {},",
+        " system003: {}",
         "});",
       ].join('\n')
     );

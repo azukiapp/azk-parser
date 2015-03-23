@@ -19,6 +19,8 @@ class System {
 
     this._name    = this._props.name;
     this._depends = this._props.depends || [];
+
+    this._initialize_syntax();
   }
 
   addDependency(system) {
@@ -27,11 +29,10 @@ class System {
 
   get syntax() {
     // get initial syntax
-    var ast = this._initial_syntax();
-    var system_body = ast.program.body[0].body.body;
+    this._property = this._syntax.program.body[0].declarations[0].init.properties[0];
 
     // set system name
-    ast.program.body[0].label.name = this._props.name;
+    this._property.key.name = this._props.name;
 
     if (this._depends.length > 0) {
       // 'depends': array property
@@ -41,15 +42,15 @@ class System {
         var depends_item = new Depends({ system: sys });
         depends_property_array.addItem(depends_item.syntax);
       });
-      system_body.push(depends_property_array.syntax);
+      this._property.value.properties.push(depends_property_array.syntax);
     }
 
-    return ast;
+    return this._property;
   }
 
-  _initial_syntax() {
-    return parser.parse([
-        " __SYSTEM_NAME__: {}",
+  _initialize_syntax() {
+    this._syntax = parser.parse([
+        "var obj = { __SYSTEM_NAME__: {} }",
       ]
       .join('\n'))
       .syntax;
