@@ -29,7 +29,7 @@ class PropertyObjectExpression {
 
   _initialize_syntax() {
     this._ast = parser.parse([
-        'var obj = { "__PROPERTY_KEY__": "__PROPERTY_VALUE__" }',
+        'var obj = { __PROPERTY_KEY__: "__PROPERTY_VALUE__" }',
       ]
       .join('\n'))
       .syntax;
@@ -41,8 +41,13 @@ class PropertyObjectExpression {
 
   get syntax() {
     // key
-    this._property.key.value   = this._key;
-    this._property.key.raw     = this._key;
+    if (this._key.indexOf('-') > 0 ) {
+      this._property.key.type = 'Literal';
+      this._property.key.value = this._key;
+      this._property.key.raw   = this._key;
+    } else {
+      this._property.key.name = this._key;
+    }
 
     // value
     this._property.value.value = this._value;

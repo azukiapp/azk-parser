@@ -21,7 +21,7 @@ describe('PropertyObjectExpression:', function() {
     var code = generator.generate(property_obj_exp_ast.syntax).code;
     h.expect(code).to.eql(
       [
-        "\"KEY\": \"VALUE\"",
+        "KEY: \"VALUE\"",
       ].join('\n')
     );
   });

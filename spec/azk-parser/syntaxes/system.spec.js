@@ -10,6 +10,36 @@ describe('System:', function() {
     system001 = new System({ name: 'system001' });
   });
 
+  it('should import a JSON object to system', function () {
+    // add two dependencies
+    var system001_json = {
+      "name": "system001",
+      "depends": [
+        "system002",
+        "system003"
+      ],
+      "image": {"docker": "azukiapp/azktcl:0.0.1"}
+    };
+
+    // create a system from JSON
+    var system_from_json = new System({ json: system001_json });
+
+    // get JSON from this new system
+    var json = system_from_json.toJSON();
+    h.expect(json).not.be.undefined;
+
+    // name
+    h.expect(json.name).to.equal('system001');
+
+    // depends
+    h.expect(json.depends).to.have.length(2);
+    h.expect(json.depends[0]).to.equal('system002');
+    h.expect(json.depends[1]).to.equal('system003');
+
+    // image
+    h.expect(json.image).to.deep.equal({"docker": "azukiapp/azktcl:0.0.1"});
+  });
+
   it('should system have a syntax', function () {
     h.expect(system001)       .to.not.be.undefined;
     h.expect(system001.syntax).to.not.be.undefined;
@@ -61,46 +91,25 @@ describe('System:', function() {
     h.expect(code).to.eql(
       [
         'system001: {',
-        '  image: { "docker": "azukiapp/azktcl:0.0.1" }',
+        '  image: { docker: "azukiapp/azktcl:0.0.1" }',
         '}',
       ].join('\n')
     );
   });
 
-  it('should export a JSON object from system', function () {
-    // add two dependencies
-    system001.addDepends('system002');
-    system001.addDepends('system003');
-
-    var json = system001.toJSON();
-    h.expect(json).not.be.undefined;
-
-    // depends
-    h.expect(json.depends).to.have.length(2);
-    h.expect(json.depends[0]).to.equal('system002');
-    h.expect(json.depends[1]).to.equal('system003');
-  });
-
-  it('should import a JSON object to system', function () {
-    // add two dependencies
-    var system001_json = {
-      depends: [
-        'system002',
-        'system003'
-      ]
-    };
-
-    // create a system from JSON
-    var system_from_json = new System({ json: system001_json });
-
-    // get JSON from this new system
-    var json = system_from_json.toJSON();
-    h.expect(json).not.be.undefined;
-
-    // depends
-    h.expect(json.depends).to.have.length(2);
-    h.expect(json.depends[0]).to.equal('system002');
-    h.expect(json.depends[1]).to.equal('system003');
+  it('should generate a system with a shell', function () {
+    system001 = new System({
+      name: 'system001',
+      shell: '/bin/bash'
+    });
+    var code = generator.generate(system001.syntax).code;
+    h.expect(code).to.eql(
+      [
+        'system001: {',
+        '  shell: "/bin/bash"',
+        '}',
+      ].join('\n')
+    );
   });
 
 });

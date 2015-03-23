@@ -13,12 +13,12 @@ describe('PropertyObjectExpressionObjectValue:', function() {
     });
   });
 
-  it('should depends have a syntax', function () {
+  it('should have a syntax', function () {
     h.expect(property_obj_exp_obj_value)       .to.not.be.undefined;
     h.expect(property_obj_exp_obj_value.syntax).to.not.be.undefined;
   });
 
-  it('should generate code a KEY', function () {
+  it('should generate code with a KEY', function () {
     var prop_exp = new PropertyObjectExpression({
       key:   'INNER_KEY',
       value: 'INNER_VALUE',
@@ -28,7 +28,7 @@ describe('PropertyObjectExpressionObjectValue:', function() {
     var code = generator.generate(property_obj_exp_obj_value.syntax).code;
     h.expect(code).to.eql(
       [
-        "KEY: { \"INNER_KEY\": \"INNER_VALUE\" }",
+        "KEY: { INNER_KEY: \"INNER_VALUE\" }",
       ].join('\n')
     );
   });
@@ -47,7 +47,7 @@ describe('PropertyObjectExpressionObjectValue:', function() {
     var code = generator.generate(property_obj_exp_obj_value.syntax).code;
     h.expect(code).to.eql(
       [
-        "\"KEY-LITERAL\": { \"INNER_KEY\": \"INNER_VALUE\" }",
+        "\"KEY-LITERAL\": { INNER_KEY: \"INNER_VALUE\" }",
       ].join('\n')
     );
   });

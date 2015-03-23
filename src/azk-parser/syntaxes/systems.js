@@ -13,6 +13,7 @@ Error.stackTraceLimit = 25;
 class Systems {
   constructor(props) {
     var default_props = {
+      systems: []
     };
 
     this._props = {};
@@ -22,34 +23,6 @@ class Systems {
     this._systems = [];
 
     this._initialize_syntax();
-  }
-
-  add(system) {
-    this._systems.push(system);
-  }
-
-  findByName(system_name) {
-    return _.find(this._systems, function(sys) {
-      return sys.name === system_name;
-    });
-  }
-
-  remove(system) {
-    _.remove(this._systems, function(sys) {
-      return system.name === sys.name;
-    });
-  }
-
-  _findSystemsObject(/*syntax*/) {
-    var node_selected = null;
-    // estraverse.traverse(syntax, {
-    //   enter: function(node) {
-    //     if (node.type === 'ObjectExpression') {
-    //       node_selected = node;
-    //     }
-    //   }
-    // });
-    return node_selected;
   }
 
   _initialize_syntax() {
@@ -79,6 +52,34 @@ class Systems {
     }
 
     return this._ast;
+  }
+
+  add(system) {
+    this._systems.push(system);
+  }
+
+  findByName(system_name) {
+    return _.find(this._systems, function(sys) {
+      return sys.name === system_name;
+    });
+  }
+
+  remove(system) {
+    _.remove(this._systems, function(sys) {
+      return system.name === sys.name;
+    });
+  }
+
+  _findSystemsObject(/*syntax*/) {
+    var node_selected = null;
+    // estraverse.traverse(syntax, {
+    //   enter: function(node) {
+    //     if (node.type === 'ObjectExpression') {
+    //       node_selected = node;
+    //     }
+    //   }
+    // });
+    return node_selected;
   }
 
 }
