@@ -1,5 +1,5 @@
 import { _ } from 'azk-core';
-import Depends from './depends';
+import Literal from './literal';
 import PropertyArray from './property-array';
 
 var Parser = require('../../parser');
@@ -21,10 +21,20 @@ class System {
     this._depends = this._props.depends || [];
 
     this._initialize_syntax();
+
+    if (this._props.json) {
+      this.fromJSON(this._props.json);
+    }
   }
 
-  addDependency(system) {
-    this._depends.push(system);
+  addDepends(system_name) {
+    this._depends.push(system_name);
+  }
+
+  rmDepends(system_name) {
+    _.remove(this._depends, function(sys_name) {
+      return sys_name === system_name;
+    }, this);
   }
 
   get syntax() {
@@ -34,13 +44,13 @@ class System {
     // set system name
     this._property.key.name = this._props.name;
 
-    if (this._depends.length > 0) {
-      // 'depends': array property
+    // depends
+    if (this._depends && this._depends.length > 0) {
       var depends_property_array = new PropertyArray({ property_array_name: 'depends'});
       // add each dependency
-      this._depends.forEach(function(sys) {
-        var depends_item = new Depends({ system: sys });
-        depends_property_array.addItem(depends_item.syntax);
+      this._depends.forEach(function(sys_name) {
+        var literal = new Literal({ value: sys_name });
+        depends_property_array.addElement(literal.syntax);
       });
       this._property.value.properties.push(depends_property_array.syntax);
     }
@@ -58,6 +68,25 @@ class System {
 
   get name() {
     return this._name;
+  }
+
+  toJSON() {
+    var json = {};
+    json.depends = _.map(this._depends, function(sys_name) {
+      return sys_name;
+    }, this);
+    return json;
+  }
+
+  fromJSON(json) {
+    if (json.depends && json.depends.length > 0) {
+      // initialize depends
+      this._depends = [];
+      // add each dependent system name
+      _.forEach(json.depends, function(depends_item) {
+        this.addDepends(depends_item);
+      }, this);
+    }
   }
 
 }

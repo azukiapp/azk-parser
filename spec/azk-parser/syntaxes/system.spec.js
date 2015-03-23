@@ -15,12 +15,19 @@ describe('System:', function() {
     h.expect(system001.syntax).to.not.be.undefined;
   });
 
-  it('should system add dependencies', function () {
-    var system002 = new System({ name: 'system002' });
-    system001.addDependency(system002);
-
+  it('should system add a depends', function () {
+    system001.addDepends('system002');
     h.expect(system001._depends).to.not.be.undefined;
     h.expect(system001._depends.length).to.eql(1);
+  });
+
+  it('should system remove a depends', function () {
+    system001.addDepends('system002');
+    h.expect(system001._depends.length).to.eql(1);
+
+    system001.rmDepends('system002');
+    h.expect(system001._depends.length).to.eql(0);
+
   });
 
   it('should generate a system', function () {
@@ -33,8 +40,7 @@ describe('System:', function() {
   });
 
   it('should generate a system with dependencies', function () {
-    var system002 = new System({ name: 'system002' });
-    system001.addDependency(system002);
+    system001.addDepends('system002');
 
     var code = generator.generate(system001.syntax).code;
     h.expect(code).to.eql(
@@ -44,6 +50,39 @@ describe('System:', function() {
         "}",
       ].join('\n')
     );
+  });
+
+  it('should export a JSON object from system', function () {
+    // add two dependencies
+    system001.addDepends('system002');
+    system001.addDepends('system003');
+
+    var json = system001.toJSON();
+    h.expect(json).not.be.undefined;
+
+    // depends
+    h.expect(json.depends).to.have.length(2);
+    h.expect(json.depends[0]).to.equal('system002');
+    h.expect(json.depends[1]).to.equal('system003');
+  });
+
+  it('should import a JSON object to system', function () {
+    // add two dependencies
+    system001.addDepends('system002');
+    system001.addDepends('system003');
+    var system001_json = system001.toJSON();
+
+    // create a system from JSON
+    var system_from_json = new System({ json: system001_json });
+
+    // get JSON from this new system
+    var json = system_from_json.toJSON();
+    h.expect(json).not.be.undefined;
+
+    // depends
+    h.expect(json.depends).to.have.length(2);
+    h.expect(json.depends[0]).to.equal('system002');
+    h.expect(json.depends[1]).to.equal('system003');
   });
 
 });

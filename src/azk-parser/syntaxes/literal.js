@@ -3,9 +3,9 @@ var Parser = require('../../parser');
 var parser = new Parser();
 
 /**
- * Depends
+ * Literal
  */
-class Depends {
+class Literal {
   constructor(props) {
     var default_props = {
       name: '',
@@ -15,7 +15,7 @@ class Depends {
     _.assign(this._props, default_props);
     _.assign(this._props, props);
 
-    this._system = this._props.system;
+    this._value = this._props.value;
 
     this._initialize_syntax();
   }
@@ -32,12 +32,12 @@ class Depends {
     // set system name
     var body = this._ast.program.body[0];
     var element = body.expression.elements[0];
-    element.value = this._system.name;
-    element.raw   = this._system.name;
+    element.value = this._value;
+    element.raw   = this._value;
 
     return element;
   }
 
 }
 
-module.exports = Depends;
+module.exports = Literal;

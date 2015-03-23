@@ -32,7 +32,7 @@ class PropertyArray {
       .syntax;
   }
 
-  addItem(literal) {
+  addElement(literal) {
     this._property.value.elements.push(literal);
   }
 

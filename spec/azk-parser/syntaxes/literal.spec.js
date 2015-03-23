@@ -1,14 +1,12 @@
 import h        from '../../spec-helper';
-import Depends   from '../../../src/azk-parser/syntaxes/depends';
-import System   from '../../../src/azk-parser/syntaxes/system';
-
+import Literal   from '../../../src/azk-parser/syntaxes/literal';
 import Generator from '../../../src/generator';
 var generator = new Generator();
 
-describe('Depends:', function() {
+describe('Literal:', function() {
   var literal_ast;
   beforeEach(function () {
-    literal_ast = new Depends({ system: new System({ name: 'system001' }) });
+    literal_ast = new Literal({ value: 'system001' });
   });
 
   it('should depends have a syntax', function () {
