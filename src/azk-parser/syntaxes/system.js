@@ -27,9 +27,36 @@ class System {
 
     this._initialize_syntax();
 
+    if (this._props.azkfile_system) {
+      this._parseAzkFileSystem(this._props.azkfile_system);
+    } else {
+      this._initialize_syntax();
+    }
+
     if (this._props.json) {
       this.fromJSON(this._props.json);
     }
+  }
+
+  _parseAzkFileSystem(azkfile_system) {
+    var parser = new Parser({ tolerant: true });
+    this._ast = parser.parse(azkfile_system).syntax;
+
+    var system_properties = this._ast.program.body[0]
+      .declarations[0].init.properties[0].value.properties;
+
+    system_properties.forEach(function (prop) {
+      /**/require('azk-core').dlog(prop.key.name, "prop.key.name", null);/*-debug-*/
+    });
+
+    // var all_systems_properties = ast_object_expression.properties;
+    //
+    // all_systems_properties.forEach(function (sys_prop) {
+    //   //FIXME: create a system with sys_prop
+    //   //var system = new System({ azkfile_system: sys_prop });
+    //   this._systems.push(sys_prop.name);
+    // }.bind(this));
+
   }
 
   _initialize_syntax() {

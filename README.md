@@ -95,8 +95,3 @@ $ gulp test-no-lint
 ```
 $ npm run-script patch
 ```
-
-#### log with colors
-```js
-/**/require('azk-core').dlog(XXXX, "XXXX", null);/*-debug-*/
-```

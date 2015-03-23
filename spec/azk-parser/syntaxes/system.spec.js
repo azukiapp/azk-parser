@@ -112,4 +112,31 @@ describe('System:', function() {
     );
   });
 
+  it('should generate a system from an Azkfile.js', function () {
+
+    var azkfile_system_content = [
+      'var azkfile_system = { system001: {',
+      '  // http://images.azk.io',
+      '  image: { docker: "azukiapp/azktcl:0.0.1" },',
+      '',
+      '  // depends on systems below',
+      '  depends: [\"system002\"],',
+      '',
+      '  // default shell binary',
+      '  shell: "/bin/bash",',
+      '} }',
+    ].join('\n');
+
+    var system = new System({ azkfile_system: azkfile_system_content });
+
+    h.expect(system._name).to.equal('system001');
+
+    // depends
+    h.expect(system._depends).to.have.length(1);
+    h.expect(system._depends[0]).to.equal('system002');
+
+    // image
+    h.expect(system._image).to.deep.equal({"docker": "azukiapp/azktcl:0.0.1"});
+  });
+
 });

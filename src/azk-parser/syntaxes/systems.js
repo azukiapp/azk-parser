@@ -22,7 +22,11 @@ class Systems {
 
     this._systems = [];
 
-    this._initialize_syntax();
+    if (this._props.azkfile) {
+      this._parseAzkFile(this._props.azkfile);
+    } else {
+      this._initialize_syntax();
+    }
   }
 
   _initialize_syntax() {
@@ -38,6 +42,19 @@ class Systems {
       ]
       .join('\n'))
       .syntax;
+  }
+
+  _parseAzkFile(azkfile) {
+    this._ast = parser.parse(azkfile).syntax;
+    var ast_object_expression = this._ast.program.body[0].expression.arguments[0];
+    var all_systems_properties = ast_object_expression.properties;
+
+    all_systems_properties.forEach(function (sys_prop) {
+      //FIXME: create a system with sys_prop
+      //var system = new System({ azkfile_system: sys_prop });
+      this._systems.push(sys_prop.name);
+    }.bind(this));
+
   }
 
   get syntax() {

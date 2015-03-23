@@ -83,4 +83,24 @@ describe('Systems:', function() {
 
   });
 
+  it('should generate child systems from an Azkfile.js', function () {
+
+    var azkfile = [
+      "/**",
+      " * Documentation: http://docs.azk.io/Azkfile.js",
+      " */",
+      "",
+      "// Adds the systems that shape your system",
+      "systems({",
+      " system001: {},",
+      " system002: {},",
+      " system003: {}",
+      "});",
+    ].join('\n');
+
+    systems = new Systems({ azkfile: azkfile });
+
+    h.expect(systems._systems).to.have.length(3);
+  });
+
 });
