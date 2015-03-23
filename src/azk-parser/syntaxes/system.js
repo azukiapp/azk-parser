@@ -1,6 +1,9 @@
-import { _ } from 'azk-core';
-import Literal from './literal';
-import PropertyArray from './property-array';
+import { _ }                    from 'azk-core';
+import Literal                  from './literal';
+import PropertyArray            from './property-array';
+import PropertyObjectExpression from './property-object-expression';
+import PropertyObjectExpressionObjectValue
+  from './property-object-expression-object-value';
 
 var Parser = require('../../parser');
 var parser = new Parser();
@@ -19,6 +22,7 @@ class System {
 
     this._name    = this._props.name;
     this._depends = this._props.depends || [];
+    this._image   = this._props.image || null;
 
     this._initialize_syntax();
 
@@ -53,6 +57,22 @@ class System {
         depends_property_array.addElement(literal.syntax);
       });
       this._property.value.properties.push(depends_property_array.syntax);
+    }
+
+    // image
+    if (this._image) {
+
+      var image_property_obj_exp = new PropertyObjectExpressionObjectValue({
+        key: 'image'
+      });
+
+      var image_repository = new PropertyObjectExpression({
+        key: 'docker',
+        value: 'azukiapp/azktcl:0.0.1'
+      });
+      image_property_obj_exp.addPropertyObjectExpression(image_repository.syntax);
+
+      this._property.value.properties.push(image_property_obj_exp.syntax);
     }
 
     return this._property;

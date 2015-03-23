@@ -52,6 +52,21 @@ describe('System:', function() {
     );
   });
 
+  it('should generate a system with a image', function () {
+    system001 = new System({
+      name: 'system001',
+      image: {'docker': 'azukiapp/azktcl:0.0.1'}
+    });
+    var code = generator.generate(system001.syntax).code;
+    h.expect(code).to.eql(
+      [
+        'system001: {',
+        '  image: { "docker": "azukiapp/azktcl:0.0.1" }',
+        '}',
+      ].join('\n')
+    );
+  });
+
   it('should export a JSON object from system', function () {
     // add two dependencies
     system001.addDepends('system002');
@@ -68,9 +83,12 @@ describe('System:', function() {
 
   it('should import a JSON object to system', function () {
     // add two dependencies
-    system001.addDepends('system002');
-    system001.addDepends('system003');
-    var system001_json = system001.toJSON();
+    var system001_json = {
+      depends: [
+        'system002',
+        'system003'
+      ]
+    };
 
     // create a system from JSON
     var system_from_json = new System({ json: system001_json });
