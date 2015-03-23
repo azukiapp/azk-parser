@@ -16,10 +16,12 @@ class Depends {
     _.assign(this._props, props);
 
     this._system = this._props.system;
+
+    this._initialize_syntax();
   }
 
-  _initial_syntax() {
-    return parser.parse([
+  _initialize_syntax() {
+    this._ast = parser.parse([
         '["__DEPENDS_NAME__"]',
       ]
       .join('\n'))
@@ -27,11 +29,8 @@ class Depends {
   }
 
   get syntax() {
-    // get initial syntax
-    var ast = this._initial_syntax();
-
     // set system name
-    var body = ast.program.body[0];
+    var body = this._ast.program.body[0];
     var element = body.expression.elements[0];
     element.value = this._system.name;
     element.raw   = this._system.name;

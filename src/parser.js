@@ -7,19 +7,16 @@ var recast = require('recast');
 class Parser {
   constructor(options) {
     var default_options = {
-      raw: true,
-      tokens: true,
       range: true,
-      comment: true,
-      loc: true
+      tolerant: false
     };
 
     this._options = {};
     _.assign(this._options, default_options);
     _.assign(this._options, options);
 
-    this._code = null;
-    this._syntax = null;
+    this._original_code = null;
+    this._ast = null;
   }
 
   parse(code) {
@@ -27,18 +24,18 @@ class Parser {
       throw new Error('parse( --must receive code-- ) ');
     }
 
-    this._code = code;
-    this._syntax = recast.parse(this._code, this._options);
+    this._original_code = code;
+    this._ast = recast.parse(this._original_code, this._options);
 
     return this;
   }
 
-  get syntax() {
-    return this._syntax;
+  get original_code() {
+    return this._original_code;
   }
 
-  get code() {
-    return this._code;
+  get syntax() {
+    return this._ast;
   }
 
 }

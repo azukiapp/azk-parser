@@ -5,9 +5,6 @@ import System   from '../../../src/azk-parser/syntaxes/system';
 import Generator from '../../../src/generator';
 var generator = new Generator();
 
-// var bb = require('bluebird');
-// var spawn = bb.coroutine;
-
 describe('Depends:', function() {
   var literal_ast;
   beforeEach(function () {
@@ -20,7 +17,7 @@ describe('Depends:', function() {
   });
 
   it('should generate depends', function () {
-    var code = generator.generate(literal_ast.syntax);
+    var code = generator.generate(literal_ast.syntax).code;
     h.expect(code).to.eql(
       [
         "\"system001\"",

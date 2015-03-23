@@ -31,12 +31,12 @@ class AzkParser {
 
   _generateSystems() {
     var systems = this._getSystems();
-    return this._generator.generate(systems.syntax);
+    return this._generator.generate(systems.syntax).code;
   }
 
   _generateSystem(system_name) {
     var system = this._getSystem(system_name);
-    return this._generator.generate(system.syntax);
+    return this._generator.generate(system.syntax).code;
   }
 
   _addSystemToSystems(systems, system) {

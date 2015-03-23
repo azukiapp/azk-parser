@@ -7,43 +7,38 @@ var recast = require('recast');
 class Generator {
   constructor(options) {
     var default_options = {
-      comment: true,
-      format: {
-        indent: {
-          style: '  ',
-          base: 0,
-          adjustMultilineComment: false
-        },
-        newline: '\n',
-        space: ' ',
-        json: false,
-        renumber: false,
-        hexadecimal: false,
-        quotes: 'single',
-        escapeless: false,
-        compact: false,
-        parentheses: true,
-        semicolons: true,
-        safeConcatenation: false,
-        preserveBlankLines: true
-      }
+      tabWidth: 2,
+      isPreetyPrint: false
     };
 
     this._options = {};
     _.assign(this._options, default_options);
     _.assign(this._options, options);
+
+    this._original_ast = null;
+    this._generated_code = null;
   }
 
   generate(ast) {
     var code = null;
-    code = recast.print(ast).code;
-    return code;
+    if (this._options.isPreetyPrint) {
+      code = recast.prettyPrint(ast, { tabWidth: this._options.tabWidth || 2 }).code;
+    } else {
+      code = recast.print(ast).code;
+    }
+
+    this._original_ast = ast;
+    this._generated_code = code;
+
+    return this;
   }
 
-  generatePrettyPrint(ast) {
-    //var code = recast.prettyPrint(ast, { tabWidth: 2 }).code;
-    var code = recast.print(ast).code;
-    return code;
+  get original_syntax() {
+    return this._original_ast;
+  }
+
+  get code() {
+    return this._generated_code;
   }
 }
 

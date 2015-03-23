@@ -15,19 +15,17 @@ class PropertyArray {
     _.assign(this._props, default_props);
     _.assign(this._props, props);
 
-    this._syntax = null;
+    this._ast = null;
     this._property_key_name = this._props.property_array_name;
 
-    //FIXME: apply this initialization to all syntaxes
     this._initialize_syntax();
 
     // alias
-    this._property = this._syntax.program.body[0].declarations[0].init.properties[0];
+    this._property = this._ast.program.body[0].declarations[0].init.properties[0];
   }
 
   _initialize_syntax() {
-    //FIXME: create this._syntax to all syntaxes
-    this._syntax = parser.parse([
+    this._ast = parser.parse([
         'var obj = { __PROPERTY_ARRAY_NAME__: [] }',
       ]
       .join('\n'))

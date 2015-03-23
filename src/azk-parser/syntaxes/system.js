@@ -29,7 +29,7 @@ class System {
 
   get syntax() {
     // get initial syntax
-    this._property = this._syntax.program.body[0].declarations[0].init.properties[0];
+    this._property = this._ast.program.body[0].declarations[0].init.properties[0];
 
     // set system name
     this._property.key.name = this._props.name;
@@ -49,7 +49,7 @@ class System {
   }
 
   _initialize_syntax() {
-    this._syntax = parser.parse([
+    this._ast = parser.parse([
         "var obj = { __SYSTEM_NAME__: {} }",
       ]
       .join('\n'))

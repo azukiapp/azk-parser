@@ -4,9 +4,6 @@ import System   from '../../../src/azk-parser/syntaxes/system';
 import Generator from '../../../src/generator';
 var generator = new Generator();
 
-// var bb = require('bluebird');
-// var spawn = bb.coroutine;
-
 describe('System:', function() {
   var system001;
   beforeEach(function () {
@@ -27,7 +24,7 @@ describe('System:', function() {
   });
 
   it('should generate a system', function () {
-    var code = generator.generate(system001.syntax);
+    var code = generator.generate(system001.syntax).code;
     h.expect(code).to.eql(
       [
         "system001: {}",
@@ -39,7 +36,7 @@ describe('System:', function() {
     var system002 = new System({ name: 'system002' });
     system001.addDependency(system002);
 
-    var code = generator.generate(system001.syntax);
+    var code = generator.generate(system001.syntax).code;
     h.expect(code).to.eql(
       [
         "system001: {",

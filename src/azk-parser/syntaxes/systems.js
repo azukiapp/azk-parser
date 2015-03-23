@@ -21,6 +21,7 @@ class Systems {
 
     this._systems = [];
 
+    this._initialize_syntax();
   }
 
   add(system) {
@@ -51,8 +52,8 @@ class Systems {
     return node_selected;
   }
 
-  _initial_syntax() {
-    return parser.parse([
+  _initialize_syntax() {
+    this._ast = parser.parse([
         "/**",
         " * Documentation: http://docs.azk.io/Azkfile.js",
         " */",
@@ -67,20 +68,17 @@ class Systems {
   }
 
   get syntax() {
-    // get initial syntax
-    var ast = this._initial_syntax();
-
     if (this._systems.length > 0) {
 
       // get ObjectExpression in system({})
-      var ast_object_expression = ast.program.body[0].expression.arguments[0];
+      var ast_object_expression = this._ast.program.body[0].expression.arguments[0];
 
       _.forEach(this._systems, function(system) {
         ast_object_expression.properties.push(system.syntax);
       });
     }
 
-    return ast;
+    return this._ast;
   }
 
 }

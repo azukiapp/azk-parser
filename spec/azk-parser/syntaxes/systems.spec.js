@@ -2,8 +2,6 @@ import h         from '../../spec-helper';
 import Systems   from '../../../src/azk-parser/syntaxes/systems';
 import System    from '../../../src/azk-parser/syntaxes/system';
 import Generator from '../../../src/generator';
-// var bb = require('bluebird');
-// var spawn = bb.coroutine;
 
 var generator = new Generator();
 
@@ -42,7 +40,7 @@ describe('Systems:', function() {
   });
 
   it('should generate systems', function () {
-    var code = generator.generate(systems.syntax);
+    var code = generator.generate(systems.syntax).code;
 
     h.expect(code).to.eql(
       [
@@ -66,7 +64,7 @@ describe('Systems:', function() {
     systems.add( new System({ name: 'system003' }) );
 
     var new_syntax = systems.syntax;
-    var code = generator.generate(new_syntax);
+    var code = generator.generate(new_syntax).code;
 
     h.expect(code).to.eql(
       [
