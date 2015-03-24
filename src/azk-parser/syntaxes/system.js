@@ -24,6 +24,9 @@ class System {
     this._depends = this._props.depends || [];
     this._image   = this._props.image   || null;
     this._shell   = this._props.shell   || null;
+    this._command = this._props.command || null;
+    this._extends = this._props.extends || null;
+    this._workdir = this._props.workdir || null;
 
     this._initialize_syntax();
 
@@ -42,21 +45,31 @@ class System {
     var parser = new Parser({ tolerant: true });
     this._ast = parser.parse(azkfile_system).syntax;
 
-    var system_properties = this._ast.program.body[0]
-      .declarations[0].init.properties[0].value.properties;
+    var system_ast = this._ast.program.body[0]
+      .declarations[0].init.properties[0];
 
-    system_properties.forEach(function (prop) {
-      /**/require('azk-core').dlog(prop.key.name, "prop.key.name", null);/*-debug-*/
-    });
+    var system_properties_ast = system_ast.value.properties;
 
-    // var all_systems_properties = ast_object_expression.properties;
-    //
-    // all_systems_properties.forEach(function (sys_prop) {
-    //   //FIXME: create a system with sys_prop
-    //   //var system = new System({ azkfile_system: sys_prop });
-    //   this._systems.push(sys_prop.name);
-    // }.bind(this));
+    this._name = system_ast.key.name;
 
+    system_properties_ast.forEach(function (prop) {
+      //FIXME: turn into generic functions for similar parameters
+      if (prop.key.name === "depends") {
+        prop.value.elements.forEach(function (depend_system) {
+          this.addDepends(depend_system.value);
+        }.bind(this));
+      } else if (prop.key.name === "image") {
+        var image_name = prop.value.properties[0].key.name;
+        this._image = {};
+        this._image[image_name] = prop.value.properties[0].value.value;
+      } else {
+        var shell_name = 'shell';
+        this._shell = {};
+        this._shell[shell_name] = prop.value.value;
+      }
+    }.bind(this));
+
+    return this;
   }
 
   _initialize_syntax() {
@@ -99,7 +112,6 @@ class System {
 
     // image
     if (this._image) {
-
       var image_property_obj_exp = new PropertyObjectExpressionObjectValue({
         key: 'image'
       });
@@ -113,17 +125,36 @@ class System {
       this._property.value.properties.push(image_property_obj_exp.syntax);
     }
 
-    // set system name
+    // set system shell
     if (this._shell) {
-      var shell_property = new PropertyObjectExpression({
-        key: 'shell',
-        value: '/bin/bash'
-      });
+      this._property.value.properties.push(this.getLiteralPropertySyntax('shell', '/bin/bash'));
+    }
 
-      this._property.value.properties.push(shell_property.syntax);
+    // set system command
+    if (this._command) {
+      this._property.value.properties.push(this.getLiteralPropertySyntax('command', 'npm install'));
+    }
+
+    // set system extends
+    if (this._extends) {
+      this._property.value.properties.push(this.getLiteralPropertySyntax('extends', 'app'));
+    }
+
+    // set system workdir
+    if (this._workdir) {
+      this._property.value.properties.push(this.getLiteralPropertySyntax('workdir', '/azk/#{manifest.dir}'));
     }
 
     return this._property;
+  }
+
+  getLiteralPropertySyntax(property_name, property_value) {
+    var literal_property = new PropertyObjectExpression({
+      key: property_name,
+      value: property_value
+    });
+
+    return literal_property.syntax;
   }
 
   get name() {

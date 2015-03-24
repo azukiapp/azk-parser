@@ -112,6 +112,51 @@ describe('System:', function() {
     );
   });
 
+  it('should generate a system with command', function() {
+    system001 = new System({
+      name: 'system001',
+      command: 'npm install'
+    });
+    var code = generator.generate(system001.syntax).code;
+    h.expect(code).to.eql(
+      [
+        'system001: {',
+        '  command: "npm install"',
+        '}',
+      ].join('\n')
+    );
+  });
+
+  it('should generate a system with extends', function() {
+    system001 = new System({
+      name: 'system001',
+      extends: 'app'
+    });
+    var code = generator.generate(system001.syntax).code;
+    h.expect(code).to.eql(
+      [
+        'system001: {',
+        '  extends: "app"',
+        '}',
+      ].join('\n')
+    );
+  });
+
+  it('should generate a system with workdir', function() {
+    system001 = new System({
+      name: 'system001',
+      workdir: '/azk/#{manifest.dir}'
+    });
+    var code = generator.generate(system001.syntax).code;
+    h.expect(code).to.eql(
+      [
+        'system001: {',
+        '  workdir: "/azk/#{manifest.dir}"',
+        '}',
+      ].join('\n')
+    );
+  });
+
   it('should generate a system from an Azkfile.js', function () {
 
     var azkfile_system_content = [
@@ -137,6 +182,9 @@ describe('System:', function() {
 
     // image
     h.expect(system._image).to.deep.equal({"docker": "azukiapp/azktcl:0.0.1"});
+
+    // shell
+    h.expect(system._shell).to.deep.equal({"shell": "/bin/bash"});
   });
 
 });
