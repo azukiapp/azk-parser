@@ -157,18 +157,42 @@ describe('System:', function() {
     );
   });
 
+  //FIXME: split this test for each property
   it('should generate a system from an Azkfile.js', function () {
-
     var azkfile_system_content = [
       'var azkfile_system = { system001: {',
       '  // http://images.azk.io',
       '  image: { docker: "azukiapp/azktcl:0.0.1" },',
+      '  envs: { ENV1: "MY GREAT ENV 1", ',
+      '          ENV2: "MY WONDERFUL ENV 2" },',
+      '  export_envs: { ENV1: "MY SAD ENV 1", ',
+      '                 ENV2: "MY POOR ENV 2" },',
+      '  ports: {',
+      '    http: "9200",',
+      '    data: "5432/tcp",',
+      '  },',
+      '  wait: {retry: 40, timeout: 10000},',
+      '  scalable: {',
+      '    default: 1,',
+      '    limit: 2,',
+      '  },',
+      '  mounts: { ',
+      '    "/azk/#{manifest.dir}/feedbin": path("./feedbin"),',
+      '    "/azk/bundler": persistent("bundler"),',
+      '    bundler_literal: "bundler_literal_value",',
+      '  },',
+      '  http: { domains: [ "#{system.name}.#{azk.default_domain}" ]},',
       '',
       '  // depends on systems below',
       '  depends: [\"system002\"],',
       '',
       '  // default shell binary',
       '  shell: "/bin/bash",',
+      '  command: "npm start",',
+      '  extends: "app",',
+      '  workdir: "/azk/#{manifest.dir}",',
+      '  dns_servers: ["8.8.8.8", "4.4.4.4"],',
+      '  provision: ["npm install"],',
       '} }',
     ].join('\n');
 
@@ -180,11 +204,70 @@ describe('System:', function() {
     h.expect(system._depends).to.have.length(1);
     h.expect(system._depends[0]).to.equal('system002');
 
+    // provision
+    h.expect(system._provision).to.have.length(1);
+    h.expect(system._provision[0]).to.equal('npm install');
+
+    // dns_servers
+    h.expect(system._dns_servers).to.have.length(2);
+    h.expect(system._dns_servers[0]).to.equal('8.8.8.8');
+    h.expect(system._dns_servers[1]).to.equal('4.4.4.4');
+
     // image
     h.expect(system._image).to.deep.equal({"docker": "azukiapp/azktcl:0.0.1"});
 
+    // envs
+    h.expect(system._envs).to.deep.equal({
+      ENV1: "MY GREAT ENV 1",
+      ENV2: "MY WONDERFUL ENV 2"
+    });
+
+    // export_envs
+    h.expect(system._export_envs).to.deep.equal({
+      ENV1: "MY SAD ENV 1",
+      ENV2: "MY POOR ENV 2"
+    });
+
+    // ports
+    h.expect(system._ports).to.deep.equal({
+      http: "9200",
+      data: "5432/tcp",
+    });
+
+    // mounts
+    h.expect(system._mounts).to.deep.equal({
+      "/azk/#{manifest.dir}/feedbin" : 'path("./feedbin")',
+      "/azk/bundler"                 : 'persistent("bundler")',
+      bundler_literal                : "bundler_literal_value",
+    });
+
+    // scalable
+    h.expect(system._scalable).to.deep.equal({
+      default: 1,
+      limit: 2,
+    });
+
+    // wait
+    h.expect(system._wait).to.deep.equal({
+      retry: 40,
+      timeout: 10000,
+    });
+
     // shell
     h.expect(system._shell).to.deep.equal({"shell": "/bin/bash"});
+
+    // command
+    h.expect(system._command).to.deep.equal({"command": "npm start"});
+
+    // extends
+    h.expect(system._extends).to.deep.equal({"extends": "app"});
+
+    // workdir
+    h.expect(system._workdir).to.deep.equal({"workdir": "/azk/#{manifest.dir}"});
+
+    // image
+    h.expect(system._http.domains).to.have.length(1);
+    h.expect(system._http.domains[0]).to.equal('#{system.name}.#{azk.default_domain}');
   });
 
 });

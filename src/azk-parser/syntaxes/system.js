@@ -5,8 +5,10 @@ import PropertyObjectExpression from './property-object-expression';
 import PropertyObjectExpressionObjectValue
   from './property-object-expression-object-value';
 
-var Parser = require('../../parser');
-var parser = new Parser();
+var Parser    = require('../../parser');
+var parser    = new Parser();
+var Generator = require('../../generator');
+var generator = new Generator();
 
 /**
  * System
@@ -20,13 +22,22 @@ class System {
     _.assign(this._props, default_props);
     _.assign(this._props, props);
 
-    this._name    = this._props.name;
-    this._depends = this._props.depends || [];
-    this._image   = this._props.image   || null;
-    this._shell   = this._props.shell   || null;
-    this._command = this._props.command || null;
-    this._extends = this._props.extends || null;
-    this._workdir = this._props.workdir || null;
+    this._name        = this._props.name;
+    this._depends     = this._props.depends     || [];
+    this._provision   = this._props.provision   || [];
+    this._dns_servers = this._props.dns_servers || [];
+    this._image       = this._props.image       || null;
+    this._shell       = this._props.shell       || null;
+    this._command     = this._props.command     || null;
+    this._extends     = this._props.extends     || null;
+    this._workdir     = this._props.workdir     || null;
+    this._http        = this._props.http        || null;
+    this._envs        = this._props.envs        || null;
+    this._export_envs = this._props.export_envs || null;
+    this._ports       = this._props.ports       || null;
+    this._scalable    = this._props.scalable    || null;
+    this._mounts      = this._props.mounts      || null;
+    this._wait        = this._props.wait        || null;
 
     this._initialize_syntax();
 
@@ -43,6 +54,9 @@ class System {
   }
 
   _parseAzkFileSystem(azkfile_system) {
+
+    this.cleanAllProperties();
+
     var parser = new Parser({ tolerant: true });
     this._ast = parser.parse(azkfile_system).syntax;
 
@@ -55,22 +69,103 @@ class System {
 
     system_properties_ast.forEach(function (prop) {
       //FIXME: turn into generic functions for similar parameters
-      if (prop.key.name === "depends") {
+      if (prop.key.name === 'depends') {
         prop.value.elements.forEach(function (depend_system) {
           this.addDepends(depend_system.value);
         }.bind(this));
-      } else if (prop.key.name === "image") {
+      } else if (prop.key.name === 'provision') {
+        prop.value.elements.forEach(function (provision_step) {
+          this._provision.push(provision_step.value);
+        }.bind(this));
+      } else if (prop.key.name === 'dns_servers') {
+        prop.value.elements.forEach(function (dns_server) {
+          this._dns_servers.push(dns_server.value);
+        }.bind(this));
+      } else if (prop.key.name === 'image') {
         var image_name = prop.value.properties[0].key.name;
-        this._image = {};
         this._image[image_name] = prop.value.properties[0].value.value;
-      } else {
-        var shell_name = 'shell';
-        this._shell = {};
-        this._shell[shell_name] = prop.value.value;
+      } else if (prop.key.name === 'envs') {
+        this._setSystemMultiProperties (this._envs, prop);
+      } else if (prop.key.name === 'export_envs') {
+        this._setSystemMultiProperties (this._export_envs, prop);
+      } else if (prop.key.name === 'ports') {
+        this._setSystemMultiProperties (this._ports, prop);
+      } else if (prop.key.name === 'scalable') {
+        this._setSystemMultiProperties (this._scalable, prop);
+      } else if (prop.key.name === 'wait') {
+        this._setSystemMultiProperties (this._wait, prop);
+      } else if (prop.key.name === 'mounts') {
+        var property_array = prop.value.properties;
+        property_array.forEach(function (prop_array_item) {
+          // FIXME: new mount structure
+          // mounts: {
+          //   'key': {
+          //     'name': path || persistent
+          //     'type': string || function
+          //     'path': '\.'
+          // }
+          // get key; FIXME: extract to helper function
+          var system_property_key = null;
+          if (prop_array_item.key.type === 'Literal') {
+            system_property_key = prop_array_item.key.value;
+          } else if (prop_array_item.key.type === 'Identifier') {
+            system_property_key = prop_array_item.key.name;
+          }
+
+          var item_value = null;
+          if (prop_array_item.value.type === 'CallExpression') {
+            item_value = generator.generate(prop_array_item.value).code;
+          } else {
+            item_value = prop_array_item.value.value;
+          }
+
+          this._mounts[system_property_key] = item_value;
+
+        }.bind(this));
+      } else if (prop.key.name === 'http') {
+        var domains_key = prop.value.properties[0].key.name;
+        this._http[domains_key] = [];
+        var domains_array = prop.value.properties[0].value.elements;
+        domains_array.forEach(function (domain_item) {
+          this._http[domains_key].push(domain_item.value);
+        }.bind(this));
+      } else if (prop.key.name === 'shell') {
+        this._shell.shell = prop.value.value;
+      } else if (prop.key.name === 'command') {
+        this._command.command = prop.value.value;
+      } else if (prop.key.name === 'extends') {
+        this._extends.extends = prop.value.value;
+      } else if (prop.key.name === 'workdir') {
+        this._workdir.workdir = prop.value.value;
       }
     }.bind(this));
 
     return this;
+  }
+
+  cleanAllProperties() {
+    this._depends     = [];
+    this._dns_servers = [];
+    this._provision   = [];
+    this._workdir     = {};
+    this._extends     = {};
+    this._command     = {};
+    this._shell       = {};
+    this._image       = {};
+    this._http        = {};
+    this._envs        = {};
+    this._export_envs = {};
+    this._ports       = {};
+    this._scalable    = {};
+    this._mounts      = {};
+    this._wait        = {};
+  }
+
+  _setSystemMultiProperties (system_property, ast_property) {
+    var property_array = ast_property.value.properties;
+    property_array.forEach(function (prop_array_item) {
+      system_property[prop_array_item.key.name] = prop_array_item.value.value;
+    });
   }
 
   _initialize_syntax() {
@@ -124,6 +219,25 @@ class System {
       image_property_obj_exp.addPropertyObjectExpression(image_repository.syntax);
 
       this._property.value.properties.push(image_property_obj_exp.syntax);
+    }
+
+    // http
+    if (this._http) {
+      var http_property_obj_exp = new PropertyObjectExpressionObjectValue({
+        key: 'http'
+      });
+
+      if (this._http.domains && this._http.domains.length > 0) {
+        var http_domains_property_array = new PropertyArray({ property_array_name: 'domains'});
+        // add each domain
+        this._http.domains.forEach(function(domain_url) {
+          var literal = new Literal({ value: domain_url });
+          http_domains_property_array.addElement(literal.syntax);
+        });
+        http_property_obj_exp.addPropertyObjectExpression(http_domains_property_array.syntax);
+      }
+
+      this._property.value.properties.push(http_property_obj_exp.syntax);
     }
 
     // set system shell
