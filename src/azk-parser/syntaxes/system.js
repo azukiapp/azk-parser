@@ -34,6 +34,7 @@ class System {
     }
 
     if (this._props.json) {
+
       this.fromJSON(this._props.json);
     }
   }

@@ -60,7 +60,7 @@ class Systems {
   get syntax() {
     if (this._systems.length > 0) {
 
-      // get ObjectExpression in system({})
+      // get ObjectExpression in systems({})
       var ast_object_expression = this._ast.program.body[0].expression.arguments[0];
 
       _.forEach(this._systems, function(system) {
