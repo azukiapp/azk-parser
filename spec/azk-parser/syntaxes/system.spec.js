@@ -1,8 +1,10 @@
 import h        from '../../spec-helper';
 import System   from '../../../src/azk-parser/syntaxes/system';
-
+import Parser from '../../../src/parser';
 import Generator from '../../../src/generator';
+
 var generator = new Generator();
+var parser    = new Parser();
 
 describe('System:', function() {
   var system001;
@@ -40,9 +42,9 @@ describe('System:', function() {
     h.expect(json.image).to.deep.equal({"docker": "azukiapp/azktcl:0.0.1"});
   });
 
-  it('should system have a syntax', function () {
+  it('should convert system to ast', function () {
     h.expect(system001)       .to.not.be.undefined;
-    h.expect(system001.syntax).to.not.be.undefined;
+    h.expect(system001.convert_to_ast).to.not.be.undefined;
   });
 
   it('should system add a depends', function () {
@@ -61,7 +63,7 @@ describe('System:', function() {
   });
 
   it('should generate a system', function () {
-    var code = generator.generate(system001.syntax).code;
+    var code = generator.generate(system001.convert_to_ast).code;
     h.expect(code).to.eql(
       [
         "system001: {}",
@@ -72,7 +74,7 @@ describe('System:', function() {
   it('should generate a system with dependencies', function () {
     system001.addDepends('system002');
 
-    var code = generator.generate(system001.syntax).code;
+    var code = generator.generate(system001.convert_to_ast).code;
     h.expect(code).to.eql(
       [
         "system001: {",
@@ -87,7 +89,7 @@ describe('System:', function() {
       name: 'system001',
       image: {'docker': 'azukiapp/azktcl:0.0.1'}
     });
-    var code = generator.generate(system001.syntax).code;
+    var code = generator.generate(system001.convert_to_ast).code;
     h.expect(code).to.eql(
       [
         'system001: {',
@@ -102,7 +104,7 @@ describe('System:', function() {
       name: 'system001',
       shell: '/bin/bash'
     });
-    var code = generator.generate(system001.syntax).code;
+    var code = generator.generate(system001.convert_to_ast).code;
     h.expect(code).to.eql(
       [
         'system001: {',
@@ -117,7 +119,7 @@ describe('System:', function() {
       name: 'system001',
       command: 'npm install'
     });
-    var code = generator.generate(system001.syntax).code;
+    var code = generator.generate(system001.convert_to_ast).code;
     h.expect(code).to.eql(
       [
         'system001: {',
@@ -132,7 +134,7 @@ describe('System:', function() {
       name: 'system001',
       extends: 'app'
     });
-    var code = generator.generate(system001.syntax).code;
+    var code = generator.generate(system001.convert_to_ast).code;
     h.expect(code).to.eql(
       [
         'system001: {',
@@ -147,7 +149,7 @@ describe('System:', function() {
       name: 'system001',
       workdir: '/azk/#{manifest.dir}'
     });
-    var code = generator.generate(system001.syntax).code;
+    var code = generator.generate(system001.convert_to_ast).code;
     h.expect(code).to.eql(
       [
         'system001: {',
@@ -157,6 +159,12 @@ describe('System:', function() {
     );
   });
 
+  var getSystemFromAST = function (azkfile_system_content) {
+    var syntax = parser.parse(azkfile_system_content).syntax;
+    var parsed_system = syntax.program.body[0].declarations[0].init.properties[0];
+    return parsed_system;
+  };
+
   //FIXME: split this test for each property
   it('should generate a system from an Azkfile.js with the http parameter', function () {
     var azkfile_system_content = [
@@ -165,7 +173,7 @@ describe('System:', function() {
       '} }',
     ].join('\n');
 
-    var system = new System({ azkfile_system: azkfile_system_content });
+    var system = new System({ system_ast: getSystemFromAST(azkfile_system_content) });
 
     h.expect(system._name).to.equal('system001');
 
@@ -182,7 +190,7 @@ describe('System:', function() {
       '} }',
     ].join('\n');
 
-    var system = new System({ azkfile_system: azkfile_system_content });
+    var system = new System({ system_ast: getSystemFromAST(azkfile_system_content) });
 
     h.expect(system._name).to.equal('system001');
 
@@ -198,7 +206,7 @@ describe('System:', function() {
       '} }',
     ].join('\n');
 
-    var system = new System({ azkfile_system: azkfile_system_content });
+    var system = new System({ system_ast: getSystemFromAST(azkfile_system_content) });
 
     h.expect(system._name).to.equal('system001');
 
@@ -218,7 +226,7 @@ describe('System:', function() {
       '} }',
     ].join('\n');
 
-    var system = new System({ azkfile_system: azkfile_system_content });
+    var system = new System({ system_ast: getSystemFromAST(azkfile_system_content) });
 
     h.expect(system._name).to.equal('system001');
 
@@ -237,7 +245,7 @@ describe('System:', function() {
       '} }',
     ].join('\n');
 
-    var system = new System({ azkfile_system: azkfile_system_content });
+    var system = new System({ system_ast: getSystemFromAST(azkfile_system_content) });
 
     h.expect(system._name).to.equal('system001');
 
@@ -253,7 +261,7 @@ describe('System:', function() {
       '} }',
     ].join('\n');
 
-    var system = new System({ azkfile_system: azkfile_system_content });
+    var system = new System({ system_ast: getSystemFromAST(azkfile_system_content) });
 
     h.expect(system._name).to.equal('system001');
 
@@ -269,7 +277,7 @@ describe('System:', function() {
       '} }',
     ].join('\n');
 
-    var system = new System({ azkfile_system: azkfile_system_content });
+    var system = new System({ system_ast: getSystemFromAST(azkfile_system_content) });
 
     h.expect(system._name).to.equal('system001');
 
@@ -284,7 +292,7 @@ describe('System:', function() {
       '} }',
     ].join('\n');
 
-    var system = new System({ azkfile_system: azkfile_system_content });
+    var system = new System({ system_ast: getSystemFromAST(azkfile_system_content) });
 
     h.expect(system._name).to.equal('system001');
 
@@ -299,7 +307,7 @@ describe('System:', function() {
       '} }',
     ].join('\n');
 
-    var system = new System({ azkfile_system: azkfile_system_content });
+    var system = new System({ system_ast: getSystemFromAST(azkfile_system_content) });
 
     h.expect(system._name).to.equal('system001');
 
@@ -314,7 +322,7 @@ describe('System:', function() {
       '} }',
     ].join('\n');
 
-    var system = new System({ azkfile_system: azkfile_system_content });
+    var system = new System({ system_ast: getSystemFromAST(azkfile_system_content) });
 
     h.expect(system._name).to.equal('system001');
 
@@ -332,7 +340,7 @@ describe('System:', function() {
       '} }',
     ].join('\n');
 
-    var system = new System({ azkfile_system: azkfile_system_content });
+    var system = new System({ system_ast: getSystemFromAST(azkfile_system_content) });
 
     h.expect(system._name).to.equal('system001');
 
@@ -351,7 +359,7 @@ describe('System:', function() {
       '} }',
     ].join('\n');
 
-    var system = new System({ azkfile_system: azkfile_system_content });
+    var system = new System({ system_ast: getSystemFromAST(azkfile_system_content) });
 
     h.expect(system._name).to.equal('system001');
 
@@ -372,7 +380,7 @@ describe('System:', function() {
       '} }',
     ].join('\n');
 
-    var system = new System({ azkfile_system: azkfile_system_content });
+    var system = new System({ system_ast: getSystemFromAST(azkfile_system_content) });
 
     h.expect(system._name).to.equal('system001');
 
@@ -393,7 +401,7 @@ describe('System:', function() {
       '} }',
     ].join('\n');
 
-    var system = new System({ azkfile_system: azkfile_system_content });
+    var system = new System({ system_ast: getSystemFromAST(azkfile_system_content) });
 
     h.expect(system._name).to.equal('system001');
 
@@ -411,7 +419,7 @@ describe('System:', function() {
       '} }',
     ].join('\n');
 
-    var system = new System({ azkfile_system: azkfile_system_content });
+    var system = new System({ system_ast: getSystemFromAST(azkfile_system_content) });
 
     h.expect(system._name).to.equal('system001');
 

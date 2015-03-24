@@ -41,27 +41,29 @@ class System {
 
     this._initialize_syntax();
 
-    if (this._props.azkfile_system) {
+    if (this._props.system_ast) {                           //AST
+      this._parseSystemAST(this._props.system_ast);
+    } else if (this._props.azkfile_system) {                //content
       this._parseAzkFileSystem(this._props.azkfile_system);
-    } else {
-      this._initialize_syntax();
-    }
-
-    if (this._props.json) {
-
+    } else if (this._props.json) {                          //json
       this.fromJSON(this._props.json);
+    } else {                                                //scratch
+      this._initialize_syntax();
     }
   }
 
-  _parseAzkFileSystem(azkfile_system) {
+  _parseAzkFileSystem(azkfile_system_string_content) {
+    var parser = new Parser({ tolerant: true });
+    var ast = parser.parse(azkfile_system_string_content).syntax;
+    return this._parseSystemAST(ast);
+  }
+
+  _parseSystemAST(ast) {
+    this._ast = ast;
 
     this.cleanAllProperties();
 
-    var parser = new Parser({ tolerant: true });
-    this._ast = parser.parse(azkfile_system).syntax;
-
-    var system_ast = this._ast.program.body[0]
-      .declarations[0].init.properties[0];
+    var system_ast = ast;
 
     var system_properties_ast = system_ast.value.properties;
 
@@ -186,7 +188,7 @@ class System {
     }, this);
   }
 
-  get syntax() {
+  get convert_to_ast() {
     this._initialize_syntax();
 
     // get initial syntax

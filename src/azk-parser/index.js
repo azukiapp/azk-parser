@@ -1,7 +1,13 @@
 import { _ } from 'azk-core';
 import Generator from '../generator';
+import fileUtils from '../file-utils';
+
+var generator = new Generator();
+var bb = require('bluebird');
+var spawn = bb.coroutine;
+
 import Systems from './syntaxes/systems';
-import System  from './syntaxes/system';
+// import System  from './syntaxes/system';
 
 /**
  * AzkParser
@@ -19,29 +25,27 @@ class AzkParser {
     this._generator = new Generator();
   }
 
-  _getSystems() {
-    var systems = new Systems();
-    return systems;
+  getSystemsFromAzkfile(azkfile_path) {
+    return spawn(
+      function* (azkfile_path) {
+        var file_content = yield fileUtils.read(azkfile_path);
+        var systems = new Systems({ azkfile_content: file_content });
+        return systems;
+      }
+    )(azkfile_path);
   }
 
-  _getSystem(system_name) {
-    var system = new System({ name: system_name });
-    return system;
-  }
+  saveSystemsToAzkfile(ast, save_path) {
+    return spawn(
+      function* (ast, save_path) {
+        // generate code from ast
+        var azkfile_systems_content = generator.generate(ast).code;
 
-  _generateSystems() {
-    var systems = this._getSystems();
-    return this._generator.generate(systems.syntax).code;
-  }
-
-  _generateSystem(system_name) {
-    var system = this._getSystem(system_name);
-    return this._generator.generate(system.syntax).code;
-  }
-
-  _addSystemToSystems(systems, system) {
-    systems.add(system);
-    return systems;
+        // save file
+        var file_content = yield fileUtils.write(save_path, azkfile_systems_content);
+        return file_content;
+      }
+    )(ast, save_path);
   }
 
 }

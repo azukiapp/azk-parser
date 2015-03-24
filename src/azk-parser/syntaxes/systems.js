@@ -1,4 +1,6 @@
 import { _ } from 'azk-core';
+import System  from './system';
+
 var Parser = require('../../parser');
 var parser = new Parser();
 
@@ -22,8 +24,8 @@ class Systems {
 
     this._systems = [];
 
-    if (this._props.azkfile) {
-      this._parseAzkFile(this._props.azkfile);
+    if (this._props.azkfile_content) {
+      this._parseAzkFile(this._props.azkfile_content);
     } else {
       this._initialize_syntax();
     }
@@ -44,27 +46,27 @@ class Systems {
       .syntax;
   }
 
-  _parseAzkFile(azkfile) {
-    this._ast = parser.parse(azkfile).syntax;
+  _parseAzkFile(azkfile_content) {
+    this._ast = parser.parse(azkfile_content).syntax;
     var ast_object_expression = this._ast.program.body[0].expression.arguments[0];
     var all_systems_properties = ast_object_expression.properties;
 
-    all_systems_properties.forEach(function (sys_prop) {
+    all_systems_properties.forEach(function (system_ast) {
       //FIXME: create a system with sys_prop
-      //var system = new System({ azkfile_system: sys_prop });
-      this._systems.push(sys_prop.name);
+      var system = new System({ system_ast: system_ast });
+      //var system_name = sys_prop.key.value || sys_prop.key.name;
+      this._systems.push(system);
     }.bind(this));
-
   }
 
-  get syntax() {
+  get convert_to_ast() {
     if (this._systems.length > 0) {
 
       // get ObjectExpression in systems({})
       var ast_object_expression = this._ast.program.body[0].expression.arguments[0];
 
       _.forEach(this._systems, function(system) {
-        ast_object_expression.properties.push(system.syntax);
+        ast_object_expression.properties.push(system.convert_to_ast);
       });
     }
 

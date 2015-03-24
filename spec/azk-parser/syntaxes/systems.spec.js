@@ -40,7 +40,7 @@ describe('Systems:', function() {
   });
 
   it('should generate systems', function () {
-    var code = generator.generate(systems.syntax).code;
+    var code = generator.generate(systems.convert_to_ast).code;
 
     h.expect(code).to.eql(
       [
@@ -63,7 +63,7 @@ describe('Systems:', function() {
     systems.add( new System({ name: 'system002' }) );
     systems.add( new System({ name: 'system003' }) );
 
-    var new_syntax = systems.syntax;
+    var new_syntax = systems.convert_to_ast;
     var code = generator.generate(new_syntax).code;
 
     h.expect(code).to.eql(
@@ -98,7 +98,7 @@ describe('Systems:', function() {
       "});",
     ].join('\n');
 
-    systems = new Systems({ azkfile: azkfile });
+    systems = new Systems({ azkfile_content: azkfile });
 
     h.expect(systems._systems).to.have.length(3);
   });
