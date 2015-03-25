@@ -39,10 +39,40 @@ class System {
     this._mounts      = this._props.mounts      || null;
     this._wait        = this._props.wait        || null;
 
+    this.ALL_SYSTEM_KEYS = [
+      'name',
+      'http',
+      'workdir',
+      'command',
+      'export_envs',
+      'provision',
+      'ports',
+      'image',
+      'depends',
+      'envs',
+      'mounts',
+      'extends',
+      'dns_servers',
+      'scalable',
+      'shell',
+      'wait'];
+
+    // load original Azkfile.js
     if (this._props.original_ast) {
       this._original_ast = this._props.original_ast;
       this._parseOriginalAst();
+      return;
     }
+
+    // load from JSON
+    if (this._props.original_json) {
+      this._original_json = this._props.original_json;
+      this.parseJSON();
+      return;
+    }
+
+    this._initialize_syntax();
+    this.cleanAllProperties();
   }
 
   _parseOriginalAst() {
@@ -70,7 +100,10 @@ class System {
   }
 
   convert_to_ast() {
-    this._ast = this._original_ast;
+    if (this._original_ast) {
+      this._ast = this._original_ast;
+    }
+
     this._setKeyName(this._ast.key, this._name);
 
     // depends
@@ -94,6 +127,35 @@ class System {
 
   addDependency(system_name) {
     this._depends.push(system_name);
+  }
+
+  convert_to_JSON() {
+    var json = {};
+
+    var all_system_keys = _.keys(this);
+
+    all_system_keys = _.filter(all_system_keys, function(key) {
+      return _.includes(this.ALL_SYSTEM_KEYS, key.substring(1, key.length));
+    }, this);
+
+    _.forEach(all_system_keys, function(system_key) {
+      var propertyName = system_key.substring(1, system_key.length);
+      json[propertyName] = this[system_key];
+    }, this);
+
+    return json;
+  }
+
+  parseJSON() {
+    if (!this._original_json) {
+      throw new Error('this._original_json must exist to call parseJSON()');
+    }
+
+    var all_json_keys = _.keys(this._original_json);
+
+    _.forEach(all_json_keys, function(n) {
+      this['_' + n] = this._original_json[n];
+    }, this);
   }
 
   //
@@ -131,13 +193,6 @@ class System {
     this._wait        = {};
   }
 
-  // _setSystemMultiProperties (system_property, ast_property) {
-  //   var property_array = ast_property.value.properties;
-  //   property_array.forEach(function (prop_array_item) {
-  //     system_property[this.getKeyName(prop_array_item.key)] = prop_array_item.value.value;
-  //   }.bind(this));
-  // }
-
   _initialize_syntax() {
     this._ast = parser.parse([
         "var obj = { __SYSTEM_NAME__: {} }",
@@ -146,6 +201,13 @@ class System {
       .syntax
       .program.body[0].declarations[0].init.properties[0];
   }
+
+  // _setSystemMultiProperties (system_property, ast_property) {
+  //   var property_array = ast_property.value.properties;
+  //   property_array.forEach(function (prop_array_item) {
+  //     system_property[this.getKeyName(prop_array_item.key)] = prop_array_item.value.value;
+  //   }.bind(this));
+  // }
 
   rmDepends(system_name) {
     _.remove(this._depends, function(sys_name) {
@@ -200,42 +262,6 @@ class System {
 
     this._property.value.properties.push(property_obj_exp.syntax);
   }
-
-  toJSON() {
-    var json = {};
-    json.name = this._name;
-
-    json.depends = _.map(this._depends, function(sys_name) {
-      return sys_name;
-    }, this);
-
-    json.image = this._image;
-
-    return json;
-  }
-
-  fromJSON(json) {
-    // name
-    if (json.name) {
-      this._name = json.name;
-    }
-
-    // depends
-    if (json.depends && json.depends.length > 0) {
-      // initialize depends
-      this._depends = [];
-      // add each dependent system name
-      _.forEach(json.depends, function(depends_item) {
-        this.addDependency(depends_item);
-      }, this);
-    }
-
-    // image
-    if (json.image) {
-      this._image = json.image;
-    }
-  }
-
 }
 
 module.exports = System;

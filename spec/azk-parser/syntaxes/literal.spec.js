@@ -10,12 +10,12 @@ describe('Literal:', function() {
   });
 
   it('should depends have a syntax', function () {
-    h.expect(literal_ast)       .to.not.be.undefined;
-    h.expect(literal_ast.syntax).to.not.be.undefined;
+    h.expect(literal_ast)                 .to.not.be.undefined;
+    h.expect(literal_ast.convert_to_ast()).to.not.be.undefined;
   });
 
   it('should generate depends', function () {
-    var code = generator.generate(literal_ast.syntax).code;
+    var code = generator.generate(literal_ast.convert_to_ast()).code;
     h.expect(code).to.eql(
       [
         "\"system001\"",

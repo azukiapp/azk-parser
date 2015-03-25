@@ -89,8 +89,6 @@ describe('AzkParserCli:', function() {
 
       var tmp_azkfile = yield azkParserCli.add('/tmp/azkfile-from-test.js', ngrok_azkfile_path);
 
-      console.log(tmp_azkfile);
-
       h.expect(tmp_azkfile.indexOf('ngrok')).to.not.be.equal(-1);
     })();
   });

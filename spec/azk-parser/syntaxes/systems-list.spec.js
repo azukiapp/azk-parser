@@ -11,19 +11,19 @@ describe('SystemsList:', function() {
     systems = new SystemsList();
   });
 
-  it('should systems have a syntax', function () {
+  it.skip('should systems have a syntax', function () {
     h.expect(systems).to.not.been.undefined;
     h.expect(systems._systems).to.have.length(0);
   });
 
-  it('should add a system', function () {
+  it.skip('should add a system', function () {
     systems.add( new System({ name: 'system001' }) );
     systems.add( new System({ name: 'system002' }) );
 
     h.expect(systems._systems).to.have.length(2);
   });
 
-  it('should find a system by name', function () {
+  it.skip('should find a system by name', function () {
     var system_to_include = new System({ name: 'system001' });
     systems.add( system_to_include );
 
@@ -31,7 +31,7 @@ describe('SystemsList:', function() {
     h.expect(system_found).to.eql(system_to_include);
   });
 
-  it('should remove a system', function () {
+  it.skip('should remove a system', function () {
     var system_to_include = new System({ name: 'system001' });
     systems.add( system_to_include );
 
@@ -39,7 +39,7 @@ describe('SystemsList:', function() {
     h.expect(systems._systems).to.have.length(0);
   });
 
-  it('should generate systems', function () {
+  it.skip('should generate systems', function () {
     var code = generator.generate(systems.convert_to_ast).code;
 
     h.expect(code).to.eql(
@@ -83,7 +83,7 @@ describe('SystemsList:', function() {
 
   });
 
-  it('should generate child systems from an Azkfile.js', function () {
+  it.skip('should generate child systems from an Azkfile.js', function () {
 
     var azkfile = [
       "/**",
