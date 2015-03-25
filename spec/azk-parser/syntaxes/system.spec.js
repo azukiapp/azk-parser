@@ -265,7 +265,7 @@ describe('System:', function() {
     h.expect(system._name).to.equal('system001');
 
     // command
-    h.expect(system._command).to.deep.equal({"command": "npm start"});
+    h.expect(system._command).to.equal("npm start");
   });
 
   it('should generate a system from an Azkfile.js with the shell parameter', function () {
@@ -281,7 +281,7 @@ describe('System:', function() {
     h.expect(system._name).to.equal('system001');
 
     // shell
-    h.expect(system._shell).to.deep.equal({"shell": "/bin/bash"});
+    h.expect(system._shell).to.equal("/bin/bash");
   });
 
   it('should generate a system from an Azkfile.js with the extends parameter', function () {
@@ -296,7 +296,7 @@ describe('System:', function() {
     h.expect(system._name).to.equal('system001');
 
     // extends
-    h.expect(system._extends).to.deep.equal({"extends": "app"});
+    h.expect(system._extends).to.equal("app");
   });
 
   it('should generate a system from an Azkfile.js with the workdir parameter', function () {
@@ -311,7 +311,7 @@ describe('System:', function() {
     h.expect(system._name).to.equal('system001');
 
     // workdir
-    h.expect(system._workdir).to.deep.equal({"workdir": "/azk/#{manifest.dir}"});
+    h.expect(system._workdir).to.equal("/azk/#{manifest.dir}");
   });
 
   it('should generate a system from an Azkfile.js with the dns_servers parameter', function () {
