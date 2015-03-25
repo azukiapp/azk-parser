@@ -121,7 +121,7 @@ class System {
           this._mounts[system_property_key] = item_value;
 
         }.bind(this));
-      } else if (prop.key.name === 'http') {
+      } else if (prop.key.name === 'http' && prop.value.properties) {
         var domains_key = prop.value.properties[0].key.name;
         this._http[domains_key] = [];
         var domains_array = prop.value.properties[0].value.elements;
@@ -230,7 +230,7 @@ class System {
     }
 
     // image
-    if (this._image) {
+    if (this._image && !_.isEmpty(this.image)) {
       var image_property_obj_exp = new PropertyObjectExpressionObjectValue({
         key: 'image'
       });
