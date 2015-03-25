@@ -24,10 +24,10 @@ class Systems {
 
     this._systems = [];
 
+    this._initialize_syntax();
+
     if (this._props.azkfile_content) {
       this._parseAzkFile(this._props.azkfile_content);
-    } else {
-      this._initialize_syntax();
     }
   }
 
@@ -47,8 +47,9 @@ class Systems {
   }
 
   _parseAzkFile(azkfile_content) {
-    this._ast = parser.parse(azkfile_content).syntax;
-    var ast_object_expression = this._ast.program.body[0].expression.arguments[0];
+    // Azkfile.js input to create _systems array
+    this._azkfile_input_ast = parser.parse(azkfile_content).syntax;
+    var ast_object_expression = this._azkfile_input_ast.program.body[0].expression.arguments[0];
     var all_systems_properties = ast_object_expression.properties;
 
     all_systems_properties.forEach(function (system_ast) {
@@ -61,7 +62,6 @@ class Systems {
 
   get convert_to_ast() {
     if (this._systems.length > 0) {
-
       // get ObjectExpression in systems({})
       var ast_object_expression = this._ast.program.body[0].expression.arguments[0];
 

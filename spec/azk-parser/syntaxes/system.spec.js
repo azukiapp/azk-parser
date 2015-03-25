@@ -62,7 +62,7 @@ describe('System:', function() {
 
   });
 
-  it('should generate a system', function () {
+  it('should generate a simple system', function () {
     var code = generator.generate(system001.convert_to_ast).code;
     h.expect(code).to.eql(
       [
@@ -165,7 +165,6 @@ describe('System:', function() {
     return parsed_system;
   };
 
-  //FIXME: split this test for each property
   it('should generate a system from an Azkfile.js with the http parameter', function () {
     var azkfile_system_content = [
       'var azkfile_system = { system001: {',

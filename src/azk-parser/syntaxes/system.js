@@ -47,8 +47,6 @@ class System {
       this._parseAzkFileSystem(this._props.azkfile_system);
     } else if (this._props.json) {                          //json
       this.fromJSON(this._props.json);
-    } else {                                                //scratch
-      this._initialize_syntax();
     }
   }
 
@@ -59,15 +57,13 @@ class System {
   }
 
   _parseSystemAST(ast) {
-    this._ast = ast;
+    this._input_ast = ast;
 
     this.cleanAllProperties();
 
-    var system_ast = ast;
+    var system_properties_ast = this._input_ast.value.properties;
 
-    var system_properties_ast = system_ast.value.properties;
-
-    this._name = system_ast.key.name;
+    this._name = this._input_ast.key.name || this._input_ast.key.value;
 
     system_properties_ast.forEach(function (prop) {
       //FIXME: turn into generic functions for similar parameters
@@ -175,7 +171,8 @@ class System {
         "var obj = { __SYSTEM_NAME__: {} }",
       ]
       .join('\n'))
-      .syntax;
+      .syntax
+      .program.body[0].declarations[0].init.properties[0];
   }
 
   addDepends(system_name) {
@@ -189,16 +186,20 @@ class System {
   }
 
   get convert_to_ast() {
-    this._initialize_syntax();
-
     // get initial syntax
-    this._property = this._ast.program.body[0].declarations[0].init.properties[0];
+    this._property = this._ast;
 
     // set system name
-    this._property.key.name = this._name;
+    if (this._name.indexOf('-') > 0 ) { //FIXME: analyse all special characters
+      this._property.key.type = 'Literal';
+      this._property.key.value = this._name;
+      this._property.key.raw   = this._name;
+    } else {
+      this._property.key.name   = this._name;
+    }
 
     // depends
-    if (this._depends && this._depends.length > 0) {
+    if (this._depends) {
       var depends_property_array = new PropertyArray({ property_array_name: 'depends'});
       // add each dependency
       this._depends.forEach(function(sys_name) {
@@ -206,21 +207,6 @@ class System {
         depends_property_array.addElement(literal.syntax);
       });
       this._property.value.properties.push(depends_property_array.syntax);
-    }
-
-    // image
-    if (this._image) {
-      var image_property_obj_exp = new PropertyObjectExpressionObjectValue({
-        key: 'image'
-      });
-
-      var image_repository = new PropertyObjectExpression({
-        key: 'docker',
-        value: 'azukiapp/azktcl:0.0.1'
-      });
-      image_property_obj_exp.addPropertyObjectExpression(image_repository.syntax);
-
-      this._property.value.properties.push(image_property_obj_exp.syntax);
     }
 
     // http
@@ -240,6 +226,21 @@ class System {
       }
 
       this._property.value.properties.push(http_property_obj_exp.syntax);
+    }
+
+    // image
+    if (this._image) {
+      var image_property_obj_exp = new PropertyObjectExpressionObjectValue({
+        key: 'image'
+      });
+
+      var image_repository = new PropertyObjectExpression({
+        key: 'docker',
+        value: 'azukiapp/azktcl:0.0.1'
+      });
+      image_property_obj_exp.addPropertyObjectExpression(image_repository.syntax);
+
+      this._property.value.properties.push(image_property_obj_exp.syntax);
     }
 
     // set system shell

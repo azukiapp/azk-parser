@@ -26,18 +26,15 @@ class AzkParser {
   }
 
   getSystemsFromAzkfile(azkfile_path) {
-    return spawn(
-      function* (azkfile_path) {
-        var file_content = yield fileUtils.read(azkfile_path);
-        var systems = new Systems({ azkfile_content: file_content });
-        return systems;
-      }
-    )(azkfile_path);
+    return spawn(function* (azkfile_path) {
+      var file_content = yield fileUtils.read(azkfile_path);
+      var systems = new Systems({ azkfile_content: file_content });
+      return systems;
+    })(azkfile_path);
   }
 
   saveSystemsToAzkfile(ast, save_path) {
-    return spawn(
-      function* (ast, save_path) {
+    return spawn(function* (ast, save_path) {
         // generate code from ast
         var azkfile_systems_content = generator.generate(ast).code;
 

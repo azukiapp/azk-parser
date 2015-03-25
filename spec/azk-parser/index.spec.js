@@ -35,9 +35,9 @@ describe('AzkParser:', function() {
 
       // check generation
       var generated_content = yield fileUtils.read('/tmp/node-example-Azkfile.js');
-      var generatade_ast = parser.parse(generated_content.toString()).syntax;
-      var properties_ast = generatade_ast.program.body[0].expression.arguments[0].properties;
-      /**/require('azk-core').dlog(properties_ast, "properties_ast", 2);/*-debug-*/
+
+      var generated_ast = parser.parse(generated_content.toString()).syntax;
+      var properties_ast = generated_ast.program.body[0].expression.arguments[0].properties;
 
       h.expect(properties_ast).to.have.length(1);
     })();
