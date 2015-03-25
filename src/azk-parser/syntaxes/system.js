@@ -80,7 +80,8 @@ class System {
           this._dns_servers.push(dns_server.value);
         }.bind(this));
       } else if (prop.key.name === 'image') {
-        var image_name = prop.value.properties[0].key.name;
+        var image_name = prop.value.properties[0].key.name ||
+                          prop.value.properties[0].key.value;
         this._image[image_name] = prop.value.properties[0].value.value;
       } else if (prop.key.name === 'envs') {
         this._setSystemMultiProperties (this._envs, prop);
@@ -128,13 +129,13 @@ class System {
           this._http[domains_key].push(domain_item.value);
         }.bind(this));
       } else if (prop.key.name === 'shell') {
-        this._shell.shell = prop.value.value;
+        this._shell = prop.value.value;
       } else if (prop.key.name === 'command') {
-        this._command.command = prop.value.value;
+        this._command = prop.value.value;
       } else if (prop.key.name === 'extends') {
-        this._extends.extends = prop.value.value;
+        this._extends = prop.value.value;
       } else if (prop.key.name === 'workdir') {
-        this._workdir.workdir = prop.value.value;
+        this._workdir = prop.value.value;
       }
     }.bind(this));
 
@@ -145,10 +146,10 @@ class System {
     this._depends     = [];
     this._dns_servers = [];
     this._provision   = [];
-    this._workdir     = {};
-    this._extends     = {};
-    this._command     = {};
-    this._shell       = {};
+    this._workdir     = "";
+    this._extends     = "";
+    this._command     = "";
+    this._shell       = "";
     this._image       = {};
     this._http        = {};
     this._envs        = {};
@@ -199,7 +200,7 @@ class System {
     }
 
     // depends
-    if (this._depends) {
+    if (this._depends && this._depends.length > 0) {
       var depends_property_array = new PropertyArray({ property_array_name: 'depends'});
       // add each dependency
       this._depends.forEach(function(sys_name) {
@@ -234,9 +235,10 @@ class System {
         key: 'image'
       });
 
+      var key = Object.keys(this._image)[0];
       var image_repository = new PropertyObjectExpression({
-        key: 'docker',
-        value: 'azukiapp/azktcl:0.0.1'
+        key: key,
+        value: this._image[key]
       });
       image_property_obj_exp.addPropertyObjectExpression(image_repository.syntax);
 
@@ -245,22 +247,22 @@ class System {
 
     // set system shell
     if (this._shell) {
-      this._property.value.properties.push(this.getLiteralPropertySyntax('shell', '/bin/bash'));
+      this._property.value.properties.push(this.getLiteralPropertySyntax('shell', this._shell));
     }
 
     // set system command
     if (this._command) {
-      this._property.value.properties.push(this.getLiteralPropertySyntax('command', 'npm install'));
+      this._property.value.properties.push(this.getLiteralPropertySyntax('command', this._command));
     }
 
     // set system extends
     if (this._extends) {
-      this._property.value.properties.push(this.getLiteralPropertySyntax('extends', 'app'));
+      this._property.value.properties.push(this.getLiteralPropertySyntax('extends', this._extends));
     }
 
     // set system workdir
     if (this._workdir) {
-      this._property.value.properties.push(this.getLiteralPropertySyntax('workdir', '/azk/#{manifest.dir}'));
+      this._property.value.properties.push(this.getLiteralPropertySyntax('workdir', this._workdir));
     }
 
     return this._property;
