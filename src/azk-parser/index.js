@@ -25,6 +25,11 @@ class AzkParser {
     this._generator = new Generator();
   }
 
+  parse(azkfile_content) {
+    var systems = new Systems({ azkfile_original_content: azkfile_content });
+    return systems;
+  }
+
   getSystemsFromAzkfileToUpdate(azkfile_path) {
     return spawn(function* (azkfile_path) {
       var file_content = yield fileUtils.read(azkfile_path);

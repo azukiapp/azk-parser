@@ -4,7 +4,7 @@
 
 // Adds the systems that shape your system
 systems({
-  'node-example': {
+  "node-example": {
     // Dependent systems
     depends: [],
     // More images:  http://images.azk.io
