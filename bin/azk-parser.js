@@ -47,7 +47,6 @@ if (parsed.help || parsed.argv.original.length === 0) {
     '   --input, -i              filepath/url to input Azkfile.js filename (default: null)',
     '   --output, -o             filepath to output Azkfile.js filename (default: null)',
     '   --add, -a                filepath to Azkfile.js to add to input Azkfile.js (default: null)',
-    '   --depends [sys1] [sys2]  change dependency. sys1 will depend on sys2 (default: null)',
     '   --verbose, -v            show more info on output',
     '   --help, -h, -?           show this help message',
     '',
@@ -74,15 +73,15 @@ if (!output) {
   output = input;
 }
 
-azkParser.getSystemsFromAzkfile(input).then(function(systems) {
+azkParser.parse(input).then(function(systems_list) {
 
-  var all_input_systems = systems._systems;
+  var all_input_systems = systems_list._all_systems;
   all_input_systems.forEach(function(sys) {
     console.log('> \`' + sys.name + '\`' + ' system detected');
   });
 
   // generate code
-  azkParser.saveSystemsToAzkfile(systems, output).then(function() {
+  azkParser.saveSystemsToAzkfile(systems_list, output).then(function() {
     fileUtils.read(output).then(function(output_content) {
       console.log('> Azkfile generated at:', output);
       console.log('');

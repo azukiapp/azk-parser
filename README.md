@@ -20,7 +20,7 @@ Because parsing javascript returns an AST (not an CST), is not always easy to ge
 
 ```js
 import Generator from '../../../src/generator';
-import Systems   from 'azk-parser/systems';
+import Systems   from 'azk-parser/systems-list';
 import System    from 'azk-parser/system';
 
 var systems   = new Systems();

@@ -1,14 +1,14 @@
-import h         from '../../spec-helper';
-import Systems   from '../../../src/azk-parser/syntaxes/systems';
-import System    from '../../../src/azk-parser/syntaxes/system';
-import Generator from '../../../src/generator';
+import h             from '../../spec-helper';
+import SystemsList   from '../../../src/azk-parser/syntaxes/systems-list';
+import System        from '../../../src/azk-parser/syntaxes/system';
+import Generator     from '../../../src/generator';
 
 var generator = new Generator();
 
-describe('Systems:', function() {
+describe('SystemsList:', function() {
   var systems;
   beforeEach(function () {
-    systems = new Systems();
+    systems = new SystemsList();
   });
 
   it('should systems have a syntax', function () {
@@ -98,7 +98,7 @@ describe('Systems:', function() {
       "});",
     ].join('\n');
 
-    systems = new Systems({ azkfile_content: azkfile });
+    systems = new SystemsList({ azkfile_content: azkfile });
 
     h.expect(systems._systems).to.have.length(3);
   });

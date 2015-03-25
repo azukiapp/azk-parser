@@ -13,11 +13,11 @@ var feedbin_azkfile_content = require('../../../fixtures/azkfile-examples/feedbi
 describe('AzkParser:', function() {
   var azkParser, node_example_systems;
 
-  var logCode = function(systems) {
-    var systems_ast = systems.convert_to_ast();
-    var code = azkParser.generateAzkfileFromAst(systems_ast);
-    console.log(code.toString());
-  };
+  // var logCode = function(systems) {
+  //   var systems_ast = systems.convert_to_ast();
+  //   var code = azkParser.generateAzkfileFromAst(systems_ast);
+  //   console.log(code.toString());
+  // };
 
   describe('node-example:', function() {
     beforeEach(function () {
@@ -27,24 +27,24 @@ describe('AzkParser:', function() {
 
     it('should parse an Azkfile.js and get 1 system', function () {
       h.expect(node_example_systems).to.not.be.undefined;
-      h.expect(node_example_systems._systems).to.have.length(1);
+      h.expect(node_example_systems._all_systems).to.have.length(1);
     });
 
     it('should get first system name', function () {
-      h.expect(node_example_systems._systems[0].name).to.be.equal('node-example');
+      h.expect(node_example_systems._all_systems[0].name).to.be.equal('node-example');
     });
 
     it('should change first system name', function () {
       var newSystemName = 'node-better-example';
 
-      var system = node_example_systems._systems[0];
+      var system = node_example_systems._all_systems[0];
       system.name = newSystemName;
       h.expect(system.name).to.be.equal(newSystemName);
     });
 
     it('should name still be changed when regenerated', function () {
       var newSystemName = 'node-better-example';
-      var system = node_example_systems._systems[0];
+      var system = node_example_systems._all_systems[0];
       system.name = newSystemName;
 
       var systems_ast = node_example_systems.convert_to_ast();
@@ -54,25 +54,25 @@ describe('AzkParser:', function() {
     });
 
     it('should get dependencies to a system', function () {
-      var node_example_system = node_example_systems._systems[0];
+      var node_example_system = node_example_systems._all_systems[0];
       h.expect(node_example_system._depends).to.have.length(0);
     });
 
     it('should add a dependency to a system', function () {
-      var node_example_system = node_example_systems._systems[0];
+      var node_example_system = node_example_systems._all_systems[0];
       node_example_system.addDependency('jeep');
       h.expect(node_example_system._depends).to.have.length(1);
     });
 
     it('should generate with dependencies', function () {
-      var node_example_system = node_example_systems._systems[0];
+      var node_example_system = node_example_systems._all_systems[0];
       node_example_system.addDependency('jeep');
       node_example_system.addDependency('range');
 
       var systems_ast = node_example_systems.convert_to_ast();
       var code = azkParser.generateAzkfileFromAst(systems_ast);
 
-      logCode(node_example_systems);
+      // logCode(node_example_systems);
 
       h.expect(code.indexOf('jeep')).to.not.be.equal(-1);
       h.expect(code.indexOf('range')).to.not.be.equal(-1);
@@ -90,13 +90,13 @@ describe('AzkParser:', function() {
 
     it('should parse feedbin Azkfile.js and get 1 system', function () {
       h.expect(feedbin_example_systems).to.not.be.undefined;
-      h.expect(feedbin_example_systems._systems).to.have.length(9);
+      h.expect(feedbin_example_systems._all_systems).to.have.length(9);
     });
 
     it('should add a new system to an existing systems', function () {
-      var node_example_system = node_example_systems._systems[0];
+      var node_example_system = node_example_systems._all_systems[0];
       feedbin_example_systems.addSystem(node_example_system);
-      h.expect(feedbin_example_systems._systems).to.have.length(10);
+      h.expect(feedbin_example_systems._all_systems).to.have.length(10);
     });
 
     // azk-parse -i ./azkfile1 --add ./azkfile2
@@ -157,7 +157,7 @@ describe('AzkParser:', function() {
   //     generated_content = generated_content.toString();
 
   //     h.expect(generated_content).to.equal(original_code);
-  //     h.expect(systems._systems).to.have.length(1);
+  //     h.expect(systems._all_systems).to.have.length(1);
   //   })();
   // });
 
@@ -176,7 +176,7 @@ describe('AzkParser:', function() {
   //     generated_content = generated_content.toString();
 
   //     h.expect(generated_content).to.equal(original_code);
-  //     h.expect(systems._systems[0].name).to.have.equal('node-example');
+  //     h.expect(systems._all_systems[0].name).to.have.equal('node-example');
   //   })();
   // });
 
@@ -189,7 +189,7 @@ describe('AzkParser:', function() {
 
   //     var systems = yield azkParser.getSystemsFromAzkfileToUpdate(node_example_path);
 
-  //     systems._systems[0].addDependency('redis');
+  //     systems._all_systems[0].addDependency('redis');
 
   //     azkParser.saveSystemsToAzkfile(systems, '/tmp/node-example-Azkfile.js');
 
@@ -203,7 +203,7 @@ describe('AzkParser:', function() {
   //     var depends_ast = generated_ast.program.body[0].expression.arguments[0].properties[0];
   //     var depends_count = new System({ system_ast: depends_ast })._depends;
 
-  //     h.expect(systems._systems[0].name).to.have.equal('node-example');
+  //     h.expect(systems._all_systems[0].name).to.have.equal('node-example');
   //     h.expect(depends_count).to.have.length(1);
   //   })();
   // });
