@@ -201,13 +201,17 @@ class System {
 
     // depends
     if (this._depends && this._depends.length > 0) {
-      var depends_property_array = new PropertyArray({ property_array_name: 'depends'});
-      // add each dependency
-      this._depends.forEach(function(sys_name) {
-        var literal = new Literal({ value: sys_name });
-        depends_property_array.addElement(literal.syntax);
-      });
-      this._property.value.properties.push(depends_property_array.syntax);
+      this._property.value.properties.push(this.getArrayPropertySyntax('depends', this._depends));
+    }
+
+    // dns_servers
+    if (this._dns_servers && this._dns_servers.length > 0) {
+      this._property.value.properties.push(this.getArrayPropertySyntax('dns_servers', this._dns_servers));
+    }
+
+    // provision
+    if (this._provision && this._provision.length > 0) {
+      this._property.value.properties.push(this.getArrayPropertySyntax('provision', this._provision));
     }
 
     // http
@@ -227,22 +231,6 @@ class System {
       }
 
       this._property.value.properties.push(http_property_obj_exp.syntax);
-    }
-
-    // image
-    if (this._image && !_.isEmpty(this.image)) {
-      var image_property_obj_exp = new PropertyObjectExpressionObjectValue({
-        key: 'image'
-      });
-
-      var key = Object.keys(this._image)[0];
-      var image_repository = new PropertyObjectExpression({
-        key: key,
-        value: this._image[key]
-      });
-      image_property_obj_exp.addPropertyObjectExpression(image_repository.syntax);
-
-      this._property.value.properties.push(image_property_obj_exp.syntax);
     }
 
     // set system shell
@@ -265,6 +253,46 @@ class System {
       this._property.value.properties.push(this.getLiteralPropertySyntax('workdir', this._workdir));
     }
 
+    // image
+    if (this._image && !_.isEmpty(this.image)) {
+      var image_property_obj_exp = new PropertyObjectExpressionObjectValue({
+        key: 'image'
+      });
+
+      var key = Object.keys(this._image)[0];
+      var image_repository = new PropertyObjectExpression({
+        key: key,
+        value: this._image[key]
+      });
+      image_property_obj_exp.addPropertyObjectExpression(image_repository.syntax);
+
+      this._property.value.properties.push(image_property_obj_exp.syntax);
+    }
+
+    // envs
+    // if (this._envs) {
+    //   var envs_property_obj_exp = new PropertyObjectExpressionObjectValue({
+    //     key: 'envs'
+    //   });
+    //
+    //   var keys = Object.keys(this._envs);
+    //   keys.forEach(function(key) {
+    //     var env_property = new PropertyObjectExpression({
+    //       key: key,
+    //       value: this._envs[key]
+    //     });
+    //     envs_property_obj_exp.addPropertyObjectExpression(env_property.syntax);
+    //   })(this);
+    //
+    //   this._property.value.properties.push(envs_property_obj_exp.syntax);
+    // }
+
+    // export_envs: { key : value } //multiple
+    // mounts:  { key : value } (value = persisten('') or path('.') //multiple
+    // ports: { key : value } //multiple
+    // scalable: { key : value } ( default: 1, limit:1 }
+    // wait: { key : value } ( retry: [ATTEMPT_NUM], timeout: [TIME_BETWEEN_ATTEMPTS_IN_MILLISECONDS] )
+
     return this._property;
   }
 
@@ -275,6 +303,17 @@ class System {
     });
 
     return literal_property.syntax;
+  }
+
+  getArrayPropertySyntax(property_name, property_value) {
+    var array_property = new PropertyArray({ property_array_name: property_name});
+    // add each dependency
+    property_value.forEach(function(sys_name) {
+      var literal = new Literal({ value: sys_name });
+      array_property.addElement(literal.syntax);
+    });
+
+    return array_property.syntax;
   }
 
   get name() {

@@ -84,17 +84,34 @@ describe('System:', function() {
     );
   });
 
-  it('should generate a system with a image', function () {
+  it('should generate a system with dns_servers', function () {
     system001 = new System({
       name: 'system001',
-      image: {'docker': 'azukiapp/azktcl:0.0.1'}
+      dns_servers: ['8.8.8.8', '4.4.4.4']
     });
+
     var code = generator.generate(system001.convert_to_ast).code;
     h.expect(code).to.eql(
       [
-        'system001: {',
-        '  image: { docker: "azukiapp/azktcl:0.0.1" }',
-        '}',
+        "system001: {",
+        "  dns_servers: [\"8.8.8.8\", \"4.4.4.4\"]",
+        "}",
+      ].join('\n')
+    );
+  });
+
+  it('should generate a system with provision', function () {
+    system001 = new System({
+      name: 'system001',
+      provision: ['npm install']
+    });
+
+    var code = generator.generate(system001.convert_to_ast).code;
+    h.expect(code).to.eql(
+      [
+        "system001: {",
+        "  provision: [\"npm install\"]",
+        "}",
       ].join('\n')
     );
   });
@@ -158,6 +175,43 @@ describe('System:', function() {
       ].join('\n')
     );
   });
+
+  it('should generate a system with an image', function () {
+    system001 = new System({
+      name: 'system001',
+      image: {'docker': 'azukiapp/azktcl:0.0.1'}
+    });
+    var code = generator.generate(system001.convert_to_ast).code;
+    h.expect(code).to.eql(
+      [
+        'system001: {',
+        '  image: { docker: "azukiapp/azktcl:0.0.1" }',
+        '}',
+      ].join('\n')
+    );
+  });
+
+  // envs: { key : value } //multiple
+  // it('should generate a system with envs', function () {
+  //   system001 = new System({
+  //     name: 'system001',
+  //     envs: {'ENV1': 'foo', 'ENV2': 'bar'}
+  //   });
+  //   var code = generator.generate(system001.convert_to_ast).code;
+  //   h.expect(code).to.eql(
+  //     [
+  //       'system001: {',
+  //       '  envs: { "ENV1": "foo", "ENV2": "bar" }',
+  //       '}',
+  //     ].join('\n')
+  //   );
+  // });
+
+  // export_envs: { key : value } //multiple
+  // mounts:  { key : value } (value = persisten('') or path('.') //multiple
+  // ports: { key : value } //multiple
+  // scalable: { key : value } ( default: 1, limit:1 }
+  // wait: { key : value } ( retry: [ATTEMPT_NUM], timeout: [TIME_BETWEEN_ATTEMPTS_IN_MILLISECONDS] )
 
   var getSystemFromAST = function (azkfile_system_content) {
     var syntax = parser.parse(azkfile_system_content).syntax;
