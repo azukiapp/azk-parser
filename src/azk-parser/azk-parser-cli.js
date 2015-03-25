@@ -5,8 +5,9 @@ import { _ } from 'azk-core';
 import fileUtils from '../file-utils';
 var bb = require('bluebird');
 var spawn = bb.coroutine;
-
 import AzkParser from './index';
+var azkParser = new AzkParser();
+
 // import System  from './syntaxes/system';
 
 /**
@@ -29,15 +30,37 @@ class AzkParserCli {
   load(azkfile_path) {
     return spawn(function* (azkfile_path) {
       var file_content = yield fileUtils.read(azkfile_path);
-      var azkParser = new AzkParser();
       this._systems_list = azkParser.parse(file_content);
     }.bind(this))(azkfile_path);
   }
 
+  save(azkfile_path) {
+    return spawn(function* (azkfile_path) {
+      var code = azkParser.generateAzkfileFromAst(this._systems_list.convert_to_ast());
+      yield fileUtils.write(azkfile_path, code);
+      return code;
+    }.bind(this))(azkfile_path);
+  }
+
   listAllSystems() {
-    return _.map(this._systems_list._systems, function(sys) {
+    return _.map(this._systems_list._all_systems, function(sys) {
       return sys.name;
     });
+  }
+
+  getSystemByName(system_name) {
+    return this._systems_list.findByName(system_name);
+  }
+
+  addSystems(azkfile_path) {
+    return spawn(function* (azkfile_path) {
+      var file_content = yield fileUtils.read(azkfile_path);
+      var azkParser = new AzkParser();
+      var new_systems_list = azkParser.parse(file_content);
+
+      this._systems_list._all_systems = this._systems_list._all_systems.concat(new_systems_list._all_systems);
+
+    }.bind(this))(azkfile_path);
   }
 }
 
