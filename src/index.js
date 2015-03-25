@@ -1,7 +1,7 @@
-import AzkParserCli from './azk-parser-cli';
 import AzkParser from './azk-parser';
+import AzkParserCli from './azk-parser-cli';
 import Generator from './generator';
-import Parser    from './parser';
+import Parser from './parser';
 import fileUtils from './file-utils';
 
 module.exports = {
