@@ -42,6 +42,18 @@ class AzkParserCli {
     }.bind(this))(azkfile_path);
   }
 
+  add(azkfile_path, azkfile_path_to_add) {
+    return spawn(function* (azkfile_path) {
+      //load node
+      yield this.load(azkfile_path);
+
+      //add ngrok
+      yield this.addSystems(azkfile_path_to_add);
+
+      return yield this.save(azkfile_path);
+    }.bind(this))(azkfile_path);
+  }
+
   listAllSystems() {
     return _.map(this._systems_list._all_systems, function(sys) {
       return sys.name;

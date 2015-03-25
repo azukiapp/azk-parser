@@ -83,18 +83,15 @@ describe('AzkParserCli:', function() {
       var node_azkfile_path = './fixtures/azkfile-examples/node-example-Azkfile.js';
       var ngrok_azkfile_path = './fixtures/azkfile-examples/ngrok-example-Azkfile.js';
 
-      /*
-      azk add mysql
-      >> add ./current-Azkfile.js /sample/mysql-azkfile.js
-      << save azkfile
-      */
+      // saving azkfile
+      yield azkParserCli.load(node_azkfile_path);
+      yield azkParserCli.save('/tmp/azkfile-from-test.js');
 
-      var result_azkfile = yield azkParserCli.save('/tmp/azkfile-from-test.js');
+      var tmp_azkfile = yield azkParserCli.add('/tmp/azkfile-from-test.js', ngrok_azkfile_path);
 
-      yield azkParserCli.add('/tmp/azkfile-from-test.js', ngrok_azkfile_path);
-      yield azkParserCli.addSystems(ngrok_azkfile_path);
+      console.log(tmp_azkfile);
 
-      h.expect(result_azkfile.indexOf('ngrok')).to.not.be.equal(-1);
+      h.expect(tmp_azkfile.indexOf('ngrok')).to.not.be.equal(-1);
     })();
   });
 
