@@ -40,8 +40,23 @@ class PropertyObjectExpression {
   }
 
   get syntax() {
+
+    var isValidFunctionName = function() {
+      var validName = /^[$A-Z_][0-9A-Z_$]*$/i;
+      var reserved = {
+        'abstract':true,
+        'boolean':true,
+        // ...
+        'with':true
+      };
+      return function(s) {
+        // Ensure a valid name and not reserved.
+        return validName.test(s) && !reserved[s];
+      };
+    }();
+
     // key
-    if (this._key.indexOf('-') > 0 ) {
+    if (!isValidFunctionName(this._key)) {
       this._property.key.type = 'Literal';
       this._property.key.value = this._key;
       this._property.key.raw   = this._key;

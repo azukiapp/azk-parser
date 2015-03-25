@@ -56,6 +56,10 @@ class System {
     return this._parseSystemAST(ast);
   }
 
+  getKeyName(key) {
+    return key.name || key.value;
+  }
+
   _parseSystemAST(ast) {
     this._input_ast = ast;
 
@@ -80,8 +84,7 @@ class System {
           this._dns_servers.push(dns_server.value);
         }.bind(this));
       } else if (prop.key.name === 'image') {
-        var image_name = prop.value.properties[0].key.name ||
-                          prop.value.properties[0].key.value;
+        var image_name = this.getKeyName(prop.value.properties[0].key);
         this._image[image_name] = prop.value.properties[0].value.value;
       } else if (prop.key.name === 'envs') {
         this._setSystemMultiProperties (this._envs, prop);
@@ -163,8 +166,8 @@ class System {
   _setSystemMultiProperties (system_property, ast_property) {
     var property_array = ast_property.value.properties;
     property_array.forEach(function (prop_array_item) {
-      system_property[prop_array_item.key.name] = prop_array_item.value.value;
-    });
+      system_property[this.getKeyName(prop_array_item.key)] = prop_array_item.value.value;
+    }.bind(this));
   }
 
   _initialize_syntax() {
@@ -254,7 +257,7 @@ class System {
     }
 
     // image
-    if (this._image && !_.isEmpty(this.image)) {
+    if (this._image && this._image.docker) {
       var image_property_obj_exp = new PropertyObjectExpressionObjectValue({
         key: 'image'
       });
@@ -270,28 +273,34 @@ class System {
     }
 
     // envs
-    // if (this._envs) {
-    //   var envs_property_obj_exp = new PropertyObjectExpressionObjectValue({
-    //     key: 'envs'
-    //   });
-    //
-    //   var keys = Object.keys(this._envs);
-    //   keys.forEach(function(key) {
-    //     var env_property = new PropertyObjectExpression({
-    //       key: key,
-    //       value: this._envs[key]
-    //     });
-    //     envs_property_obj_exp.addPropertyObjectExpression(env_property.syntax);
-    //   })(this);
-    //
-    //   this._property.value.properties.push(envs_property_obj_exp.syntax);
-    // }
+    if (this._envs) {
+      this.getObjectExpressionObjectSyntax('envs', this._envs);
+    }
 
-    // export_envs: { key : value } //multiple
-    // mounts:  { key : value } (value = persisten('') or path('.') //multiple
+    // export_envs
+    if (this._export_envs) {
+      this.getObjectExpressionObjectSyntax('export_envs', this._export_envs);
+    }
+
+    // mounts
+    if (this._mounts) {
+      this.getObjectExpressionObjectSyntax('mounts', this._mounts);
+    }
+
     // ports: { key : value } //multiple
+    if (this._ports) {
+      this.getObjectExpressionObjectSyntax('ports', this._ports);
+    }
+
     // scalable: { key : value } ( default: 1, limit:1 }
+    if (this._scalable) {
+      this.getObjectExpressionObjectSyntax('scalable', this._scalable);
+    }
+
     // wait: { key : value } ( retry: [ATTEMPT_NUM], timeout: [TIME_BETWEEN_ATTEMPTS_IN_MILLISECONDS] )
+    if (this._wait) {
+      this.getObjectExpressionObjectSyntax('wait', this._wait);
+    }
 
     return this._property;
   }
@@ -314,6 +323,26 @@ class System {
     });
 
     return array_property.syntax;
+  }
+
+  getObjectExpressionObjectSyntax(property_name, property_value) {
+    var property_obj_exp = new PropertyObjectExpressionObjectValue({
+      key: property_name
+    });
+
+    var keys = Object.keys(property_value);
+    var property_array = _.map(keys, function(key) {
+      return new PropertyObjectExpression({
+        key: key,
+        value: property_value[key]
+      });
+    }, this);
+
+    property_array.forEach(function(property_ast) {
+      property_obj_exp.addPropertyObjectExpression(property_ast.syntax);
+    });
+
+    this._property.value.properties.push(property_obj_exp.syntax);
   }
 
   get name() {

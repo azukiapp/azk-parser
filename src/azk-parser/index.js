@@ -38,6 +38,12 @@ class AzkParser {
     return generator.generate(ast).code;
   }
 
+  getPrettyCodeFromSystems(systems) {
+    this._generator = new Generator({isPreetyPrint: true});
+    var ast = systems.convert_to_ast;
+    return generator.generate(ast).code;
+  }
+
   saveSystemsToAzkfile(systems, save_path) {
     var self = this;
     return spawn(function* (systems, save_path) {

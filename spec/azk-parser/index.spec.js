@@ -27,11 +27,8 @@ describe('AzkParser:', function() {
       var node_example_path = './fixtures/azkfile-examples/node-example-Azkfile.js';
       var systems = yield azkParser.getSystemsFromAzkfile(node_example_path);
 
-      // get ast
-      var ast = systems.convert_to_ast;
-
       // generate code
-      azkParser.saveSystemsToAzkfile(ast, '/tmp/node-example-Azkfile.js');
+      azkParser.saveSystemsToAzkfile(systems, '/tmp/node-example-Azkfile.js');
 
       // check generation
       var generated_content = yield fileUtils.read('/tmp/node-example-Azkfile.js');

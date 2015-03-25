@@ -191,27 +191,110 @@ describe('System:', function() {
     );
   });
 
-  // envs: { key : value } //multiple
-  // it('should generate a system with envs', function () {
-  //   system001 = new System({
-  //     name: 'system001',
-  //     envs: {'ENV1': 'foo', 'ENV2': 'bar'}
-  //   });
-  //   var code = generator.generate(system001.convert_to_ast).code;
-  //   h.expect(code).to.eql(
-  //     [
-  //       'system001: {',
-  //       '  envs: { "ENV1": "foo", "ENV2": "bar" }',
-  //       '}',
-  //     ].join('\n')
-  //   );
-  // });
+  // envs
+  it('should generate a system with envs', function () {
+    system001 = new System({
+      name: 'system001',
+      envs: {'ENV1': 'foo', 'ENV2': 'bar'}
+    });
+    var code = generator.generate(system001.convert_to_ast).code;
+    h.expect(code).to.eql(
+      [
+        'system001: {',
+        '  envs: {',
+        '    ENV1: "foo",',
+        '    ENV2: "bar"',
+        '  }',
+        '}',
+      ].join('\n')
+    );
+  });
 
-  // export_envs: { key : value } //multiple
+  // export_envs
+  it('should generate a system with export_envs', function () {
+    system001 = new System({
+      name: 'system001',
+      export_envs: {'ENV1': 'foo', 'ENV2': 'bar'}
+    });
+    var code = generator.generate(system001.convert_to_ast).code;
+    h.expect(code).to.eql(
+      [
+        'system001: {',
+        '  export_envs: {',
+        '    ENV1: "foo",',
+        '    ENV2: "bar"',
+        '  }',
+        '}',
+      ].join('\n')
+    );
+  });
+
   // mounts:  { key : value } (value = persisten('') or path('.') //multiple
+  it('should generate a system with mounts', function () {
+    system001 = new System({
+      name: 'system001',
+      mounts: {'INTERNAL_FOLDER': "path('LOCAL_PATH')"}
+    });
+    var code = generator.generate(system001.convert_to_ast).code;
+    h.expect(code).to.eql(
+      [
+        'system001: {',
+        '  mounts: { INTERNAL_FOLDER: "path(\'LOCAL_PATH\')" }',
+        '}',
+      ].join('\n')
+    );
+  });
+
   // ports: { key : value } //multiple
+  it('should generate a system with ports', function () {
+    system001 = new System({
+      name: 'system001',
+      ports: {'http': '3000'}
+    });
+    var code = generator.generate(system001.convert_to_ast).code;
+    h.expect(code).to.eql(
+      [
+        'system001: {',
+        '  ports: { http: "3000" }',
+        '}',
+      ].join('\n')
+    );
+  });
+
   // scalable: { key : value } ( default: 1, limit:1 }
+  it('should generate a system with scalable', function () {
+    system001 = new System({
+      name: 'system001',
+      scalable: {'default': 2}
+    });
+    var code = generator.generate(system001.convert_to_ast).code;
+    h.expect(code).to.eql(
+      [
+        'system001: {',
+        '  scalable: { default: 2 }',
+        '}',
+      ].join('\n')
+    );
+  });
+
   // wait: { key : value } ( retry: [ATTEMPT_NUM], timeout: [TIME_BETWEEN_ATTEMPTS_IN_MILLISECONDS] )
+  it('should generate a system with wait', function () {
+    system001 = new System({
+      name: 'system001',
+      wait: {'retry': 20, 'timeout': 1000}
+    });
+    var code = generator.generate(system001.convert_to_ast).code;
+    h.expect(code).to.eql(
+      [
+        'system001: {',
+        '  wait: {',
+        '    retry: 20,',
+        '    timeout: 1000',
+        '  }',
+        '}',
+      ].join('\n')
+    );
+  });
 
   var getSystemFromAST = function (azkfile_system_content) {
     var syntax = parser.parse(azkfile_system_content).syntax;
