@@ -78,6 +78,26 @@ describe('AzkParserCli:', function() {
     })();
   });
 
+  it('should add', function () {
+    return spawn(function* () {
+      var node_azkfile_path = './fixtures/azkfile-examples/node-example-Azkfile.js';
+      var ngrok_azkfile_path = './fixtures/azkfile-examples/ngrok-example-Azkfile.js';
+
+      /*
+      azk add mysql
+      >> add ./current-Azkfile.js /sample/mysql-azkfile.js
+      << save azkfile
+      */
+
+      var result_azkfile = yield azkParserCli.save('/tmp/azkfile-from-test.js');
+
+      yield azkParserCli.add('/tmp/azkfile-from-test.js', ngrok_azkfile_path);
+      yield azkParserCli.addSystems(ngrok_azkfile_path);
+
+      h.expect(result_azkfile.indexOf('ngrok')).to.not.be.equal(-1);
+    })();
+  });
+
   //   Who depends on system?
   //     - node
   //     - rails
