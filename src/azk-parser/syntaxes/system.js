@@ -39,14 +39,17 @@ class System {
     this._mounts      = this._props.mounts      || null;
     this._wait        = this._props.wait        || null;
 
-    this._initialize_syntax();
-
-    if (this._props.system_ast) {                           //AST
-      this._parseSystemAST(this._props.system_ast);
-    } else if (this._props.azkfile_system) {                //content
-      this._parseAzkFileSystem(this._props.azkfile_system);
-    } else if (this._props.json) {                          //json
-      this.fromJSON(this._props.json);
+    if (this._props.system_ast_to_update) {          //AST to update
+      this._parseSystemAstToUpdate(this._props.system_ast_to_update);
+    } else {
+      this._initialize_syntax();
+      if (this._props.system_ast) {                           //AST
+        this._parseSystemAST(this._props.system_ast);
+      } else if (this._props.azkfile_system) {                //content
+        this._parseAzkFileSystem(this._props.azkfile_system);
+      } else if (this._props.json) {                          //json
+        this.fromJSON(this._props.json);
+      }
     }
   }
 
@@ -58,6 +61,12 @@ class System {
 
   getKeyName(key) {
     return key.name || key.value;
+  }
+
+  _parseSystemAstToUpdate(ast) {
+    this._ast = ast;
+    this._ast_to_update = ast;
+    return this;
   }
 
   _parseSystemAST(ast) {
@@ -73,7 +82,7 @@ class System {
       //FIXME: turn into generic functions for similar parameters
       if (prop.key.name === 'depends') {
         prop.value.elements.forEach(function (depend_system) {
-          this.addDepends(depend_system.value);
+          this.addDependency(depend_system.value);
         }.bind(this));
       } else if (prop.key.name === 'provision') {
         prop.value.elements.forEach(function (provision_step) {
@@ -179,7 +188,7 @@ class System {
       .program.body[0].declarations[0].init.properties[0];
   }
 
-  addDepends(system_name) {
+  addDependency(system_name) {
     this._depends.push(system_name);
   }
 
@@ -189,7 +198,39 @@ class System {
     }, this);
   }
 
+  findSystemProperty(prop_name) {
+    return this._ast_to_update.value.properties.find(function(prop) {
+      return prop.key.name === prop_name;
+    });
+  }
+
+  // substituteSystemProperty(property) {
+  //   return this._ast_to_update.value.properties.find(function(prop) {
+  //     if (prop.key.name === prop_name) {
+  //
+  //     }
+  //   });
+  // }
+
   get convert_to_ast() {
+    if (this._ast_to_update) {
+      this._name = this._ast_to_update.key.name || this._ast_to_update.key.value;
+
+      // depends
+      if (this._depends && this._depends.length > 0) {
+        var existing_depends = this.findSystemProperty('depends');
+
+        existing_depends.value.elements = [];
+
+        //FIXME: pass on all elements
+        var literal = new Literal(this._depends[0]);
+        existing_depends.value.elements.push(literal.syntax);
+        // this.substituteSystemProperty(existing_depends);
+      }
+
+      return this._ast_to_update;
+    }
+
     // get initial syntax
     this._property = this._ast;
 
@@ -374,7 +415,7 @@ class System {
       this._depends = [];
       // add each dependent system name
       _.forEach(json.depends, function(depends_item) {
-        this.addDepends(depends_item);
+        this.addDependency(depends_item);
       }, this);
     }
 

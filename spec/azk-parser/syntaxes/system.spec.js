@@ -48,13 +48,13 @@ describe('System:', function() {
   });
 
   it('should system add a depends', function () {
-    system001.addDepends('system002');
+    system001.addDependency('system002');
     h.expect(system001._depends).to.not.be.undefined;
     h.expect(system001._depends.length).to.eql(1);
   });
 
   it('should system remove a depends', function () {
-    system001.addDepends('system002');
+    system001.addDependency('system002');
     h.expect(system001._depends.length).to.eql(1);
 
     system001.rmDepends('system002');
@@ -72,7 +72,7 @@ describe('System:', function() {
   });
 
   it('should generate a system with dependencies', function () {
-    system001.addDepends('system002');
+    system001.addDependency('system002');
 
     var code = generator.generate(system001.convert_to_ast).code;
     h.expect(code).to.eql(

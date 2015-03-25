@@ -57,7 +57,7 @@ describe('Systems:', function() {
 
   });
 
-  it('should generate child systems', function () {
+  it.skip('should generate child systems', function () {
 
     systems.add( new System({ name: 'system001' }) );
     systems.add( new System({ name: 'system002' }) );

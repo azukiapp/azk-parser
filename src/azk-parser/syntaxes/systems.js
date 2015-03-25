@@ -24,10 +24,13 @@ class Systems {
 
     this._systems = [];
 
-    this._initialize_syntax();
-
     if (this._props.azkfile_content) {
+      this._initialize_syntax();
       this._parseAzkFile(this._props.azkfile_content);
+    } else if (this._props.azkfile_content_to_update) {
+      this._parseAzkfileToUpdate(this._props.azkfile_content_to_update);
+    } else {
+      this._initialize_syntax();
     }
   }
 
@@ -46,6 +49,17 @@ class Systems {
       .syntax;
   }
 
+  _parseAzkfileToUpdate(azkfile_content_to_update) {
+    this._ast = parser.parse(azkfile_content_to_update).syntax;
+    var ast_object_expression = this._ast.program.body[0].expression.arguments[0];
+    var all_systems_properties = ast_object_expression.properties;
+
+    all_systems_properties.forEach(function (system_ast) {
+      var system = new System({ system_ast_to_update: system_ast });
+      this._systems.push(system);
+    }.bind(this));
+  }
+
   _parseAzkFile(azkfile_content) {
     // Azkfile.js input to create _systems array
     this._azkfile_input_ast = parser.parse(azkfile_content).syntax;
@@ -55,7 +69,6 @@ class Systems {
     all_systems_properties.forEach(function (system_ast) {
       //FIXME: create a system with sys_prop
       var system = new System({ system_ast: system_ast });
-      //var system_name = sys_prop.key.value || sys_prop.key.name;
       this._systems.push(system);
     }.bind(this));
   }
@@ -66,6 +79,7 @@ class Systems {
       var ast_object_expression = this._ast.program.body[0].expression.arguments[0];
 
       _.forEach(this._systems, function(system) {
+        ast_object_expression.properties.shift();
         ast_object_expression.properties.push(system.convert_to_ast);
       });
     }

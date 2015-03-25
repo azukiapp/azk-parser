@@ -51,7 +51,7 @@ systems({
 #### system dependencies
 
 ```js
-system001.addDepends('system002');
+system001.addDependency('system002');
 
 var generator = new Generator();
 var code = generator.generate(system001.syntax);
