@@ -24,40 +24,33 @@ class Systems {
 
     this._systems = [];
 
-    if (this._props.azkfile_content) {
-      this._initialize_syntax();
-      this._parseAzkFile(this._props.azkfile_content);
-    } else if (this._props.azkfile_content_to_update) {
-      this._parseAzkfileToUpdate(this._props.azkfile_content_to_update);
-    } else {
-      this._initialize_syntax();
+    if (this._props.original_ast) {
+      this._original_ast = this._props.original_ast;
+      this._parseOriginalAzkFile();
     }
   }
 
-  _initialize_syntax() {
-    this._ast = parser.parse([
-        "/**",
-        " * Documentation: http://docs.azk.io/Azkfile.js",
-        " */",
-        "",
-        "// Adds the systems that shape your system",
-        "systems({",
-        "",
-        "});",
-      ]
-      .join('\n'))
-      .syntax;
-  }
-
-  _parseAzkfileToUpdate(azkfile_content_to_update) {
-    this._ast = parser.parse(azkfile_content_to_update).syntax;
-    var ast_object_expression = this._ast.program.body[0].expression.arguments[0];
-    var all_systems_properties = ast_object_expression.properties;
-
-    all_systems_properties.forEach(function (system_ast) {
-      var system = new System({ system_ast_to_update: system_ast });
+  _parseOriginalAzkFile() {
+    // get systems's array
+    var systems_array_ast = this._original_ast.program.body[0].expression.arguments[0].properties;
+    systems_array_ast.forEach(function (system_ast) {
+      var system = new System({ original_ast: system_ast });
       this._systems.push(system);
     }.bind(this));
+  }
+
+  convert_to_ast() {
+    this._ast = this._original_ast;
+    if (this._systems.length > 0) {
+      var systems_ast = this._ast.program.body[0].expression.arguments[0];
+      systems_ast.properties = [];
+
+      _.forEach(this._systems, function(system) {
+        systems_ast.properties.push(system.convert_to_ast());
+      });
+    }
+
+    return this._ast;
   }
 
   _parseAzkFile(azkfile_content) {
@@ -73,21 +66,7 @@ class Systems {
     }.bind(this));
   }
 
-  get convert_to_ast() {
-    if (this._systems.length > 0) {
-      // get ObjectExpression in systems({})
-      var ast_object_expression = this._ast.program.body[0].expression.arguments[0];
-
-      _.forEach(this._systems, function(system) {
-        ast_object_expression.properties.shift();
-        ast_object_expression.properties.push(system.convert_to_ast);
-      });
-    }
-
-    return this._ast;
-  }
-
-  add(system) {
+  addSystem(system) {
     this._systems.push(system);
   }
 

@@ -7,8 +7,8 @@ import PropertyObjectExpressionObjectValue
 
 var Parser    = require('../../parser');
 var parser    = new Parser();
-var Generator = require('../../generator');
-var generator = new Generator();
+// var Generator = require('../../generator');
+// var generator = new Generator();
 
 /**
  * System
@@ -39,118 +39,77 @@ class System {
     this._mounts      = this._props.mounts      || null;
     this._wait        = this._props.wait        || null;
 
-    if (this._props.system_ast_to_update) {          //AST to update
-      this._parseSystemAstToUpdate(this._props.system_ast_to_update);
-    } else {
-      this._initialize_syntax();
-      if (this._props.system_ast) {                           //AST
-        this._parseSystemAST(this._props.system_ast);
-      } else if (this._props.azkfile_system) {                //content
-        this._parseAzkFileSystem(this._props.azkfile_system);
-      } else if (this._props.json) {                          //json
-        this.fromJSON(this._props.json);
-      }
+    if (this._props.original_ast) {
+      this._original_ast = this._props.original_ast;
+      this._parseOriginalAst();
     }
   }
 
+  _parseOriginalAst() {
+    this._name = this._getKeyName(this._original_ast.key);
+  }
+
+  _getKeyName(key_ast) {
+    return key_ast.name || key_ast.value;
+  }
+
+  _setKeyName(key_ast, value) {
+    if (key_ast.value) {
+      key_ast.value = value;
+    } else if (key_ast.name) {
+      key_ast.name  = value;
+    }
+  }
+
+  get name() {
+    return this._name;
+  }
+
+  set name(value) {
+    this._name = value;
+  }
+
+  convert_to_ast() {
+    this._ast = this._original_ast;
+    this._setKeyName(this._ast.key, this._name);
+
+    // depends
+    if (this._depends && this._depends.length > 0) {
+      var existing_depends = this.findSystemProperty('depends');
+
+      existing_depends.value.elements = _.map(this._depends, function(dependency) {
+        var dependency_literal = new Literal({ value: dependency });
+        return dependency_literal.convert_to_ast();
+      }, this);
+    }
+
+    return this._ast;
+  }
+
+  findSystemProperty(prop_name) {
+    return this._ast.value.properties.find(function(prop) {
+      return prop.key.name === prop_name;
+    });
+  }
+
+  addDependency(system_name) {
+    this._depends.push(system_name);
+  }
+
+  //
+  //
+  //
+  //
+  //
   _parseAzkFileSystem(azkfile_system_string_content) {
     var parser = new Parser({ tolerant: true });
     var ast = parser.parse(azkfile_system_string_content).syntax;
     return this._parseSystemAST(ast);
   }
 
-  getKeyName(key) {
-    return key.name || key.value;
-  }
-
   _parseSystemAstToUpdate(ast) {
     this._ast = ast;
     this._ast_to_update = ast;
-    return this;
-  }
-
-  _parseSystemAST(ast) {
-    this._input_ast = ast;
-
-    this.cleanAllProperties();
-
-    var system_properties_ast = this._input_ast.value.properties;
-
-    this._name = this._input_ast.key.name || this._input_ast.key.value;
-
-    system_properties_ast.forEach(function (prop) {
-      //FIXME: turn into generic functions for similar parameters
-      if (prop.key.name === 'depends') {
-        prop.value.elements.forEach(function (depend_system) {
-          this.addDependency(depend_system.value);
-        }.bind(this));
-      } else if (prop.key.name === 'provision') {
-        prop.value.elements.forEach(function (provision_step) {
-          this._provision.push(provision_step.value);
-        }.bind(this));
-      } else if (prop.key.name === 'dns_servers') {
-        prop.value.elements.forEach(function (dns_server) {
-          this._dns_servers.push(dns_server.value);
-        }.bind(this));
-      } else if (prop.key.name === 'image') {
-        var image_name = this.getKeyName(prop.value.properties[0].key);
-        this._image[image_name] = prop.value.properties[0].value.value;
-      } else if (prop.key.name === 'envs') {
-        this._setSystemMultiProperties (this._envs, prop);
-      } else if (prop.key.name === 'export_envs') {
-        this._setSystemMultiProperties (this._export_envs, prop);
-      } else if (prop.key.name === 'ports') {
-        this._setSystemMultiProperties (this._ports, prop);
-      } else if (prop.key.name === 'scalable') {
-        this._setSystemMultiProperties (this._scalable, prop);
-      } else if (prop.key.name === 'wait') {
-        this._setSystemMultiProperties (this._wait, prop);
-      } else if (prop.key.name === 'mounts') {
-        var property_array = prop.value.properties;
-        property_array.forEach(function (prop_array_item) {
-          // FIXME: new mount structure
-          // mounts: {
-          //   'key': {
-          //     'name': path || persistent
-          //     'type': string || function
-          //     'path': '\.'
-          // }
-          // get key; FIXME: extract to helper function
-          var system_property_key = null;
-          if (prop_array_item.key.type === 'Literal') {
-            system_property_key = prop_array_item.key.value;
-          } else if (prop_array_item.key.type === 'Identifier') {
-            system_property_key = prop_array_item.key.name;
-          }
-
-          var item_value = null;
-          if (prop_array_item.value.type === 'CallExpression') {
-            item_value = generator.generate(prop_array_item.value).code;
-          } else {
-            item_value = prop_array_item.value.value;
-          }
-
-          this._mounts[system_property_key] = item_value;
-
-        }.bind(this));
-      } else if (prop.key.name === 'http' && prop.value.properties) {
-        var domains_key = prop.value.properties[0].key.name;
-        this._http[domains_key] = [];
-        var domains_array = prop.value.properties[0].value.elements;
-        domains_array.forEach(function (domain_item) {
-          this._http[domains_key].push(domain_item.value);
-        }.bind(this));
-      } else if (prop.key.name === 'shell') {
-        this._shell = prop.value.value;
-      } else if (prop.key.name === 'command') {
-        this._command = prop.value.value;
-      } else if (prop.key.name === 'extends') {
-        this._extends = prop.value.value;
-      } else if (prop.key.name === 'workdir') {
-        this._workdir = prop.value.value;
-      }
-    }.bind(this));
-
     return this;
   }
 
@@ -172,12 +131,12 @@ class System {
     this._wait        = {};
   }
 
-  _setSystemMultiProperties (system_property, ast_property) {
-    var property_array = ast_property.value.properties;
-    property_array.forEach(function (prop_array_item) {
-      system_property[this.getKeyName(prop_array_item.key)] = prop_array_item.value.value;
-    }.bind(this));
-  }
+  // _setSystemMultiProperties (system_property, ast_property) {
+  //   var property_array = ast_property.value.properties;
+  //   property_array.forEach(function (prop_array_item) {
+  //     system_property[this.getKeyName(prop_array_item.key)] = prop_array_item.value.value;
+  //   }.bind(this));
+  // }
 
   _initialize_syntax() {
     this._ast = parser.parse([
@@ -188,20 +147,10 @@ class System {
       .program.body[0].declarations[0].init.properties[0];
   }
 
-  addDependency(system_name) {
-    this._depends.push(system_name);
-  }
-
   rmDepends(system_name) {
     _.remove(this._depends, function(sys_name) {
       return sys_name === system_name;
     }, this);
-  }
-
-  findSystemProperty(prop_name) {
-    return this._ast_to_update.value.properties.find(function(prop) {
-      return prop.key.name === prop_name;
-    });
   }
 
   // substituteSystemProperty(property) {
@@ -211,140 +160,6 @@ class System {
   //     }
   //   });
   // }
-
-  get convert_to_ast() {
-    if (this._ast_to_update) {
-      this._name = this._ast_to_update.key.name || this._ast_to_update.key.value;
-
-      // depends
-      if (this._depends && this._depends.length > 0) {
-        var existing_depends = this.findSystemProperty('depends');
-
-        existing_depends.value.elements = [];
-
-        //FIXME: pass on all elements
-        var literal = new Literal(this._depends[0]);
-        existing_depends.value.elements.push(literal.syntax);
-        // this.substituteSystemProperty(existing_depends);
-      }
-
-      return this._ast_to_update;
-    }
-
-    // get initial syntax
-    this._property = this._ast;
-
-    // set system name
-    if (this._name.indexOf('-') > 0 ) { //FIXME: analyse all special characters
-      this._property.key.type = 'Literal';
-      this._property.key.value = this._name;
-      this._property.key.raw   = this._name;
-    } else {
-      this._property.key.name   = this._name;
-    }
-
-    // depends
-    if (this._depends && this._depends.length > 0) {
-      this._property.value.properties.push(this.getArrayPropertySyntax('depends', this._depends));
-    }
-
-    // dns_servers
-    if (this._dns_servers && this._dns_servers.length > 0) {
-      this._property.value.properties.push(this.getArrayPropertySyntax('dns_servers', this._dns_servers));
-    }
-
-    // provision
-    if (this._provision && this._provision.length > 0) {
-      this._property.value.properties.push(this.getArrayPropertySyntax('provision', this._provision));
-    }
-
-    // http
-    if (this._http) {
-      var http_property_obj_exp = new PropertyObjectExpressionObjectValue({
-        key: 'http'
-      });
-
-      if (this._http.domains && this._http.domains.length > 0) {
-        var http_domains_property_array = new PropertyArray({ property_array_name: 'domains'});
-        // add each domain
-        this._http.domains.forEach(function(domain_url) {
-          var literal = new Literal({ value: domain_url });
-          http_domains_property_array.addElement(literal.syntax);
-        });
-        http_property_obj_exp.addPropertyObjectExpression(http_domains_property_array.syntax);
-      }
-
-      this._property.value.properties.push(http_property_obj_exp.syntax);
-    }
-
-    // set system shell
-    if (this._shell) {
-      this._property.value.properties.push(this.getLiteralPropertySyntax('shell', this._shell));
-    }
-
-    // set system command
-    if (this._command) {
-      this._property.value.properties.push(this.getLiteralPropertySyntax('command', this._command));
-    }
-
-    // set system extends
-    if (this._extends) {
-      this._property.value.properties.push(this.getLiteralPropertySyntax('extends', this._extends));
-    }
-
-    // set system workdir
-    if (this._workdir) {
-      this._property.value.properties.push(this.getLiteralPropertySyntax('workdir', this._workdir));
-    }
-
-    // image
-    if (this._image && this._image.docker) {
-      var image_property_obj_exp = new PropertyObjectExpressionObjectValue({
-        key: 'image'
-      });
-
-      var key = Object.keys(this._image)[0];
-      var image_repository = new PropertyObjectExpression({
-        key: key,
-        value: this._image[key]
-      });
-      image_property_obj_exp.addPropertyObjectExpression(image_repository.syntax);
-
-      this._property.value.properties.push(image_property_obj_exp.syntax);
-    }
-
-    // envs
-    if (this._envs) {
-      this.getObjectExpressionObjectSyntax('envs', this._envs);
-    }
-
-    // export_envs
-    if (this._export_envs) {
-      this.getObjectExpressionObjectSyntax('export_envs', this._export_envs);
-    }
-
-    // mounts
-    if (this._mounts) {
-      this.getObjectExpressionObjectSyntax('mounts', this._mounts);
-    }
-
-    // ports: { key : value } //multiple
-    if (this._ports) {
-      this.getObjectExpressionObjectSyntax('ports', this._ports);
-    }
-
-    // scalable: { key : value } ( default: 1, limit:1 }
-    if (this._scalable) {
-      this.getObjectExpressionObjectSyntax('scalable', this._scalable);
-    }
-
-    // wait: { key : value } ( retry: [ATTEMPT_NUM], timeout: [TIME_BETWEEN_ATTEMPTS_IN_MILLISECONDS] )
-    if (this._wait) {
-      this.getObjectExpressionObjectSyntax('wait', this._wait);
-    }
-
-    return this._property;
-  }
 
   getLiteralPropertySyntax(property_name, property_value) {
     var literal_property = new PropertyObjectExpression({
@@ -384,10 +199,6 @@ class System {
     });
 
     this._property.value.properties.push(property_obj_exp.syntax);
-  }
-
-  get name() {
-    return this._name;
   }
 
   toJSON() {

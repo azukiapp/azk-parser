@@ -28,7 +28,7 @@ class Literal {
       .syntax;
   }
 
-  get syntax() {
+  convert_to_ast() {
     // set system name
     var body = this._ast.program.body[0];
     var element = body.expression.elements[0];
