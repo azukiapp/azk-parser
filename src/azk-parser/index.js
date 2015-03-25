@@ -33,16 +33,22 @@ class AzkParser {
     })(azkfile_path);
   }
 
-  saveSystemsToAzkfile(ast, save_path) {
-    return spawn(function* (ast, save_path) {
+  getCodeFromSystems(systems) {
+    var ast = systems.convert_to_ast;
+    return generator.generate(ast).code;
+  }
+
+  saveSystemsToAzkfile(systems, save_path) {
+    var self = this;
+    return spawn(function* (systems, save_path) {
         // generate code from ast
-        var azkfile_systems_content = generator.generate(ast).code;
+        var azkfile_systems_content = self.getCodeFromSystems(systems);
 
         // save file
         var file_content = yield fileUtils.write(save_path, azkfile_systems_content);
         return file_content;
       }
-    )(ast, save_path);
+    )(systems, save_path);
   }
 
 }
