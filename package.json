@@ -1,6 +1,6 @@
 {
   "name": "azk-parser",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "azk-parser",
   "main": "index.js",
   "scripts": {
