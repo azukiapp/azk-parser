@@ -1,18 +1,10 @@
 import h            from '../spec-helper';
 import AzkParserCli from '../../src/azk-parser/azk-parser-cli';
-// import fileUtils from '../../src/file-utils';
-// import Parser    from '../../src/parser';
-// var parser = new Parser();
-// import System    from '../../src/azk-parser/syntaxes/system';
 var bb = require('bluebird');
 var spawn = bb.coroutine;
 
-// var node_azkfile_content = require('../../../fixtures/azkfile-examples/node-stringified')();
-// var feedbin_azkfile_content = require('../../../fixtures/azkfile-examples/feedbin-Azkfile')();
-
 describe('AzkParserCli:', function() {
   var azkParserCli;
-  //, node_example_systems;
 
   azkParserCli = new AzkParserCli();
 
